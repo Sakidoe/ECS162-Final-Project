@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-
+  import Task from './task.svelte';
   let apiKey: string = '';
 
 //   onMount(async () => {
@@ -15,5 +15,5 @@
 </script>
 
 <main>
-    
+    <Task />
 </main>
