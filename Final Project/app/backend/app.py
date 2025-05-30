@@ -99,5 +99,32 @@ def convert_objectid(doc):
 def normalize_quotes(s):
     return s.replace('‘', "'").replace('’', "'").replace('“', '"').replace('”', '"')
 
+def find_user(user_id):
+    comments_cursor = db.notes.find({"ID": user_id})
+    return [convert_objectid(doc) for doc in comments_cursor]
+
+@app.route("/find_notes")
+def find_notes():
+    user_id = str(request.form.get('user_id'))
+    user = find_user(user_id)
+    if len(user) == 0:
+        return jsonify({"notes": []})
+    else:
+        notes = user[0]["notes"]
+        return jsonify({"notes": notes})
+
+@app.route("/insert_note")
+def insert_note():
+    note = str(request.form.get('note'))
+    title = str(request.form.get('note_title'))
+    user_id = request.form.get('user_id')
+    user = find_user(user_id)
+    if len(user) == 0:
+        db.notes.insert_one({"ID": user_id, "notes": {}})
+        db.notes.update_one({"ID": user_id}, {"$push": {"notes": {title: note}}})
+    else:
+        db.notes.update_one({"ID": user_id}, {"$push": {"notes": {title: note}}})
+    return jsonify({"success": "note added successfully"})
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8000)
