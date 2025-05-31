@@ -103,27 +103,28 @@ def find_user(user_id):
     comments_cursor = db.notes.find({"ID": user_id})
     return [convert_objectid(doc) for doc in comments_cursor]
 
-@app.route("/find_notes")
+@app.route("/find_notes", methods=["GET"])
 def find_notes():
     user_id = str(request.form.get('user_id'))
     user = find_user(user_id)
     if len(user) == 0:
-        return jsonify({"notes": []})
+        return jsonify({"notes": {}})
     else:
         notes = user[0]["notes"]
         return jsonify({"notes": notes})
 
-@app.route("/insert_note")
+@app.route("/insert_note", methods=["POST"])
 def insert_note():
-    note = str(request.form.get('note'))
-    title = str(request.form.get('note_title'))
-    user_id = request.form.get('user_id')
+    request_dictionary = request.get_json()
+    user_id = request_dictionary['user_id']
+    note = str(request_dictionary['note'])
+    title = str(request_dictionary['note_title'])
     user = find_user(user_id)
     if len(user) == 0:
         db.notes.insert_one({"ID": user_id, "notes": {}})
-        db.notes.update_one({"ID": user_id}, {"$push": {"notes": {title: note}}})
+        db.notes.update_one({"ID": user_id}, {"$set": {f"notes.{title}": note}})
     else:
-        db.notes.update_one({"ID": user_id}, {"$push": {"notes": {title: note}}})
+        db.notes.update_one({"ID": user_id}, {"$set": {f"notes.{title}": note}})
     return jsonify({"success": "note added successfully"})
 
 if __name__ == '__main__':
