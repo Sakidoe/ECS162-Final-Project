@@ -99,5 +99,116 @@ def convert_objectid(doc):
 def normalize_quotes(s):
     return s.replace('‘', "'").replace('’', "'").replace('“', '"').replace('”', '"')
 
+def find_user(user_id):
+    comments_cursor = db.notes.find({"ID": user_id})
+    return [convert_objectid(doc) for doc in comments_cursor]
+
+@app.route("/get_notes/<user_id>", methods=["GET"])
+def get_notes(user_id):
+    user = find_user(user_id)
+    if len(user) == 0:
+        return jsonify({"notes": {}})
+    else:
+        notes = user[0]["notes"]
+        return jsonify({"notes": notes})
+
+@app.route("/get_tasks/<user_id>", methods=["GET"])
+def get_tasks(user_id):
+    user = find_user(user_id)
+    if len(user) == 0:
+        return jsonify({"tasks": {}})
+    else:
+        tasks = user[0]['tasks']
+        return jsonify({"tasks": tasks})
+    
+@app.route("/get_events/<user_id>", methods=["GET"])
+def get_events(user_id):
+    user = find_user(user_id)
+    if len(user) == 0:
+        return jsonify({"events": {}})
+    else:
+        events = user[0]['events']
+        return jsonify({"events": events})
+    
+@app.route("/get_teams/<user_id>", methods=["GET"])
+def get_teams(user_id):
+    user = find_user(user_id)
+    if len(user) == 0:
+        return jsonify({"teams": {}})
+    else:
+        teams = user[0]['teams']
+        return jsonify({"teams": teams})
+
+@app.route("/create_note", methods=["POST"])
+def create_note():
+    request_dictionary = request.get_json()
+    user_id = request_dictionary['user_id']
+    note = str(request_dictionary['note'])
+    title = str(request_dictionary['note_title'])
+    user = find_user(user_id)
+    if len(user) == 0:
+        db.notes.insert_one({"ID": user_id, "notes": {}, "tasks": {}, "events": {}, "teams": {}})
+        db.notes.update_one({"ID": user_id}, {"$set": {f"notes.{title}": note}})
+    else:
+        db.notes.update_one({"ID": user_id}, {"$set": {f"notes.{title}": note}})
+    return jsonify({"success": "note added successfully"})
+
+@app.route("/create_task", methods=["POST"])
+def create_task():
+    request_dictionary = request.get_json()
+    user_id = request_dictionary['user_id']
+    task_name = request_dictionary['task_name']
+    task_description = request_dictionary['task_description']
+    tags = request_dictionary['tags']
+    priority = request_dictionary['priority']
+    due_date = request_dictionary['due_date']
+    user = find_user(user_id)
+    if len(user) == 0:
+        db.notes.insert_one({"ID": user_id, "tasks": {}, "notes": {}, "events": {}, "teams": {}})
+        db.notes.update_one({"ID": user_id}, {"$set": {f"tasks.{task_name}": {"task_description": task_description, "tags": tags, "priority": priority, "due_date": due_date}}})
+    else:
+        db.notes.update_one({"ID": user_id}, {"$set": {f"tasks.{task_name}": {"task_description": task_description, "tags": tags, "priority": priority, "due_date": due_date}}})
+    return jsonify({"success": "task created successfully"})
+
+@app.route("/create_event", methods=["POST"])
+def create_event():
+    request_dictionary = request.get_json()
+    user_id = request_dictionary['user_id']
+    event_name = request_dictionary['event_name']
+    event_notes = request_dictionary['event_notes']
+    event_location = request_dictionary['event_location']
+    event_color = request_dictionary['event_color']
+    event_reminder = request_dictionary['event_reminder']
+    event_label = request_dictionary['event_label']
+    event_start_time = request_dictionary['event_start_time']
+    event_end_time = request_dictionary['event_end_time']
+    event_date = request_dictionary['event_date']
+    event_guests = request_dictionary['event_guests']
+    user = find_user(user_id)
+    if len(user) == 0:
+        db.notes.insert_one({"ID": user_id, "events": {}, "tasks": {}, "notes": {}, "teams": {}})
+        db.notes.update_one({"ID": user_id}, {"$set": {f"events.{event_name}": {"event_notes": event_notes, "event_location": event_location, "event_color": event_color, "event_reminder": event_reminder, "event_label": event_label, "event_start_time": event_start_time, "event_end_time": event_end_time, "event_date": event_date, "event_guests": event_guests}}})
+    else:
+        db.notes.update_one({"ID": user_id}, {"$set": {f"events.{event_name}": {"event_notes": event_notes, "event_location": event_location, "event_color": event_color, "event_reminder": event_reminder, "event_label": event_label, "event_start_time": event_start_time, "event_end_time": event_end_time, "event_date": event_date, "event_guests": event_guests}}})
+    return jsonify({"success": "event created successfully"})
+
+@app.route("/create_team_task", methods=["POST"])
+def create_team_task():
+    request_dictionary = request.get_json()
+    user_id = request_dictionary['user_id']
+    task_name = request_dictionary['task_name']
+    task_description = request_dictionary['task_description']
+    task_team = request_dictionary['task_team']
+    task_assignees = request_dictionary['task_assignees']
+    task_priority = request_dictionary['task_priority']
+    task_due_date = request_dictionary['task_due_date']
+    user = find_user(user_id)
+    if len(user) == 0:
+        db.notes.insert_one({"ID": user_id, "events": {}, "tasks": {}, "notes": {}, "teams": {}})
+        db.notes.update_one({"ID": user_id}, {"$set": {f"teams.{task_team}": {task_name: {"task_description": task_description, "task_assignees": task_assignees, "task_priority": task_priority, "task_due_date": task_due_date}}}})
+    else:
+        db.notes.update_one({"ID": user_id}, {"$set": {f"teams.{task_team}": {task_name: {"task_description": task_description, "task_assignees": task_assignees, "task_priority": task_priority, "task_due_date": task_due_date}}}})
+    return jsonify({"success": "team task created successfully"})
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8000)
