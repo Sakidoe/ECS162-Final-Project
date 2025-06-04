@@ -9,6 +9,12 @@
         { name: 'tag', checked: false }
     ];
 
+    let priorityTags = [
+        { name: 'low', checked: false },
+        { name: 'medium', checked: false },
+        { name: 'high', checked: false }
+    ]
+
     let selectedTags = [];
 </script>
 
@@ -20,7 +26,7 @@
         transform: translate(-50%, -50%);
         height: 70vh;
         width: 70%;
-        background-color: lightgrey;
+        background-color: white;
         display: flex;
         flex-direction: column;
         padding: 48px;
@@ -30,10 +36,19 @@
         display: block;
         width: 100%;              
         padding: 16px;
-        background-color: lightblue;
+        background-color: #687D31CC;
         border: none;
         border-radius: 8px;
         box-sizing: border-box;
+    }
+    input::placeholder {
+        color: white;          
+    }
+    input {
+        color: white;
+    }
+    textarea::placeholder {
+        color: white;
     }
     .commentBox {
         display: block;
@@ -41,18 +56,18 @@
         width: 100%; 
         height: 30%;             
         padding: 16px;
-        background-color: lightblue;
+        background-color: #687D31CC;
         border: none;
         border-radius: 8px;
         box-sizing: border-box;
     }
 
     .tagContainer {
-        margin:16px;
+        /* margin-bottom: 16px; */
         padding: 16px;
         display: flex;
         flex-wrap: wrap;
-        justify-content:space-between;
+        justify-content: space-between;
     }
 
 </style>
@@ -72,7 +87,50 @@
         />
         <h3>tags:</h3>
         <div class="tagContainer">
-            {#each allTags as tag}
+            {#each allTags.slice(0,3) as tag}
+                <label>
+                    <input
+                        class="tagItem"
+                        type="checkbox"
+                        bind:checked={tag.checked}
+                        on:change={() => {
+                            if (tag.checked) {
+                                selectedTags.push(tag.name);
+                            } else {
+                                selectedTags = selectedTags.filter(
+                                    (t) => t !== tag.name
+                                );
+                            }
+                        }}
+                    />
+                    {tag.name}
+                </label>
+            {/each}
+        </div>
+        <div class="tagContainer">
+            {#each allTags.slice(3) as tag}
+                <label>
+                    <input
+                        class="tagItem"
+                        type="checkbox"
+                        bind:checked={tag.checked}
+                        on:change={() => {
+                            if (tag.checked) {
+                                selectedTags.push(tag.name);
+                            } else {
+                                selectedTags = selectedTags.filter(
+                                    (t) => t !== tag.name
+                                );
+                            }
+                        }}
+                    />
+                    {tag.name}
+                </label>
+            {/each}
+        </div>
+        <h3>priority:</h3>
+        <div class="tagContainer">
+            {#each priorityTags as tag}
                 <label>
                     <input
                         class="tagItem"
