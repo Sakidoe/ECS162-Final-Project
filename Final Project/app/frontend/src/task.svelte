@@ -32,7 +32,7 @@
         .map((t) => t.name);
 
         const payload = {
-        user_id:         'david',          // hard‐coded or from a store
+        user_id:         'david',          // hard‐coded rn
         task_name:       taskName,
         task_description: taskDescription,
         tags:             selectedTags,     // send an array of strings
@@ -51,7 +51,6 @@
         const data = await res.json();
         if (data.success) {
             feedback = "Task created successfully";
-            // Clear everything
             taskName = "";
             taskDescription = "";
             dueDate = "";
