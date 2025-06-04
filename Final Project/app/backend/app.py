@@ -11,6 +11,9 @@ static_path = os.getenv('STATIC_PATH','static')
 template_path = os.getenv('TEMPLATE_PATH','templates')
 app = Flask(__name__, static_folder=static_path, template_folder=template_path)
 
+client_secret = os.getenv('CLIENT_SECRET')
+client_id = os.getenv("CLIENT_ID")
+
 app.secret_key = os.urandom(24)
 
 app.config.update(
@@ -22,59 +25,100 @@ oauth = OAuth(app)
 
 nonce = generate_token()
 
-oauth.register(
-    name=os.getenv('OIDC_CLIENT_NAME'),
-    client_id=os.getenv('OIDC_CLIENT_ID'),
-    client_secret=os.getenv('OIDC_CLIENT_SECRET'),
-    # server_metadata_url='http://dex:5556/.well-known/openid-configuration',
-    authorization_endpoint="http://localhost:5556/auth",
-    token_endpoint="http://dex:5556/token",
-    jwks_uri="http://dex:5556/keys",
-    userinfo_endpoint="http://dex:5556/userinfo",
-    device_authorization_endpoint="http://dex:5556/device/code",
-    client_kwargs={'scope': 'openid email profile'}
-)
+# oauth.register(
+#     name=os.getenv('OIDC_CLIENT_NAME'),
+#     client_id=os.getenv('OIDC_CLIENT_ID'),
+#     client_secret=os.getenv('OIDC_CLIENT_SECRET'),
+#     # server_metadata_url='http://dex:5556/.well-known/openid-configuration',
+#     authorization_endpoint="http://localhost:5556/auth",
+#     token_endpoint="http://dex:5556/token",
+#     jwks_uri="http://dex:5556/keys",
+#     userinfo_endpoint="http://dex:5556/userinfo",
+#     device_authorization_endpoint="http://dex:5556/device/code",
+#     client_kwargs={'scope': 'openid email profile'}
+# )
 CORS(app, supports_credentials=True, origins=['http://localhost:5173'])
+
+
+google = oauth.register(
+    name='google',
+    client_id=client_id,
+    client_secret=client_secret,
+    access_token_url='https://oauth2.googleapis.com/token',
+    access_token_params=None,
+    authorize_url='https://accounts.google.com/o/oauth2/v2/auth',
+    authorize_params=None,
+    userinfo_endpoint='https://openidconnect.googleapis.com/v1/userinfo',
+    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+    client_kwargs={'scope': 'openid email profile'},
+)
 
 # Mongo connection
 mongo_uri = os.getenv("MONGO_URI")
 mongo = MongoClient(mongo_uri)
 db = mongo.get_database()
 
-# @app.route('/')
+@app.route('/')
 @app.route('/<path:path>')
 def serve_frontend(path=''):
     if path != '' and os.path.exists(os.path.join(static_path,path)):
         return send_from_directory(static_path, path)
     return send_from_directory(template_path, 'index.html')
 
-@app.route('/home')
-def home():
+# @app.route('/home')
+# def home():
+#     user = session.get('user')
+#     if user:
+#         return f"<h2>Logged in as {user['email']}</h2><a href='http://localhost:8000/logout'>Logout</a>"
+#     return '<a href="http://localhost:8000/login" id="login">Login with Dex</a>'
+
+# @app.route('/login')
+# def login():
+#     session['nonce'] = nonce
+#     redirect_uri = 'http://localhost:8000/authorize'
+#     return oauth.flask_app.authorize_redirect(redirect_uri, nonce=nonce)
+
+# @app.route('/authorize')
+# def authorize():
+#     token = oauth.flask_app.authorize_access_token()
+#     nonce = session.get('nonce')
+
+#     user_info = oauth.flask_app.parse_id_token(token, nonce=nonce)  # or use .get('userinfo').json()
+#     session['user'] = user_info
+#     session['user_type'] = user_info['name']
+#     return redirect('http://localhost:5173')
+
+# @app.route('/logout')
+# def logout():
+#     session.clear()
+#     return jsonify({"message": "Logged out"}), 200
+
+@app.route('/api/me')
+def get_current_user():
     user = session.get('user')
     if user:
-        return f"<h2>Logged in as {user['email']}</h2><a href='http://localhost:8000/logout'>Logout</a>"
-    return '<a href="http://localhost:8000/login" id="login">Login with Dex</a>'
+        return jsonify(user)
+    return jsonify({"error": "Not logged in"}), 401
 
 @app.route('/login')
 def login():
+    redirect_uri = url_for('auth', _external=True)
     session['nonce'] = nonce
-    redirect_uri = 'http://localhost:8000/authorize'
-    return oauth.flask_app.authorize_redirect(redirect_uri, nonce=nonce)
+    app.logger.info("[DEBUG] Redirect URI:", redirect_uri)
+    return google.authorize_redirect(redirect_uri, nonce=nonce)
 
-@app.route('/authorize')
-def authorize():
-    token = oauth.flask_app.authorize_access_token()
+@app.route('/auth')
+def auth():
+    token = google.authorize_access_token()
     nonce = session.get('nonce')
-
-    user_info = oauth.flask_app.parse_id_token(token, nonce=nonce)  # or use .get('userinfo').json()
+    user_info = google.parse_id_token(token, nonce=nonce)
     session['user'] = user_info
-    session['user_type'] = user_info['name']
     return redirect('http://localhost:5173')
 
 @app.route('/logout')
 def logout():
-    session.clear()
-    return jsonify({"message": "Logged out"}), 200
+    session.pop('user', None)
+    return redirect('/')
 
 @app.route("/is_signed_in")
 def is_signed_in():
