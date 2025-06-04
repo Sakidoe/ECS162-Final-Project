@@ -104,7 +104,6 @@ def get_current_user():
 def login():
     redirect_uri = url_for('auth', _external=True)
     session['nonce'] = nonce
-    app.logger.info("[DEBUG] Redirect URI:", redirect_uri)
     return google.authorize_redirect(redirect_uri, nonce=nonce)
 
 @app.route('/auth')
@@ -117,8 +116,9 @@ def auth():
 
 @app.route('/logout')
 def logout():
-    session.pop('user', None)
-    return redirect('/')
+    # session.pop('user', None)
+    session.clear()
+    return redirect('http://localhost:5173')
 
 @app.route("/is_signed_in")
 def is_signed_in():
