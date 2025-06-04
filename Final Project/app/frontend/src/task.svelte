@@ -24,12 +24,9 @@
     let priorityOptions = ['low', 'medium', 'high'];
     let selectedPriority = 'medium'; 
 
-    // 4) Feedback from the server
     let feedback = "";
 
-    // 5) Build payload and POST to Flask when the form is submitted
     async function createTask() {
-        // Grab all tag names whose checkbox is checked
         selectedTags = allTags
         .filter((t) => t.checked)
         .map((t) => t.name);
@@ -53,7 +50,7 @@
 
         const data = await res.json();
         if (data.success) {
-            feedback = "✅ Task created successfully!";
+            feedback = "Task created successfully";
             // Clear everything
             taskName = "";
             taskDescription = "";
@@ -77,10 +74,13 @@
         transform: translate(-50%, -50%);
         height: 60vh;
         width: 60%;
-        background-color: lightgrey;
+        background-color: white;
         display: flex;
         flex-direction: column;
         padding: 32px;
+        border-style: solid;
+        /* border-width: 2px; */
+        border-color: #687D31CC;
     }
 
     .inputBox {
@@ -118,7 +118,7 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
-        margin: 16px;
+        margin: 8px;
     }
     .tagItem {
         flex: 1;
