@@ -1,21 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-
-  let apiKey: string = '';
-
-//   onMount(async () => {
-//     try {
-//       const res = await fetch('/api/key');
-//       const data = await res.json();
-//       apiKey = data.apiKey;
-//     } catch (error) {
-//       console.error('Failed to fetch API key:', error);
-//     }
-//   }); 
-
-
-
-
+  import Calendar from './calendar.svelte';
 
   let user = null;
 
@@ -36,15 +21,15 @@
   const logout = () => window.location.href = "http://localhost:8000/logout";
   const log_user = () => console.log(user);
 </script>
-
+<!-- 
 {#if user}
   <button on:click={logout}>Logout</button>
-  <!-- <button on:click={log_user}>Log User</button> -->
+  <button on:click={log_user}>Log User</button>
 {:else}
   <button on:click={login}>Login with Google</button>
-{/if}
+{/if} -->
 
 
 <main>
-    
+    <Calendar />
 </main>
