@@ -19,7 +19,12 @@
 
     let taskName = "";
     let taskDescription = "";
-    let dueDate = "";
+    let taskDate = "";
+    let taskLocation = "";
+    let taskStartTime = "";
+    let taskEndTime = "";
+    let taskColor = "";
+    let taskLabel ="";
 
     let priorityOptions = ['low', 'medium', 'high'];
     let selectedPriority = 'medium'; 
@@ -35,9 +40,14 @@
         user_id:         'david',          // hard‐coded rn
         task_name:       taskName,
         task_description: taskDescription,
-        tags:             selectedTags,     // send an array of strings
-        priority:         selectedPriority, // single string
-        due_date:         dueDate           // e.g. "2025-06-15"
+        task_tags:             selectedTags,     // send an array of strings
+        task_priority:         selectedPriority, // single string
+        task_date:         taskDate,          //  "2025-06-15"
+        task_start_time: taskStartTime,
+        task_end_time:   taskEndTime,     
+        task_location:   taskLocation,
+        task_color:     taskColor,
+        task_label: taskLabel
         };
 
         try {
@@ -53,7 +63,7 @@
             feedback = "Task created successfully";
             taskName = "";
             taskDescription = "";
-            dueDate = "";
+            taskDate = "";
             allTags.forEach((t) => (t.checked = false));
             selectedPriority = 'medium';
         } else {
@@ -233,7 +243,7 @@
             class="inputBox"
             type="date"
             placeholder="enter due date here"
-            bind:value={dueDate}
+            bind:value={taskDate}
             required
         />
         <div class="buttonContainer">

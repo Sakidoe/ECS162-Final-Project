@@ -11,6 +11,9 @@ static_path = os.getenv('STATIC_PATH','static')
 template_path = os.getenv('TEMPLATE_PATH','templates')
 app = Flask(__name__, static_folder=static_path, template_folder=template_path)
 
+client_secret = os.getenv('CLIENT_SECRET')
+client_id = os.getenv("CLIENT_ID")
+
 app.secret_key = os.urandom(24)
 
 app.config.update(
@@ -22,59 +25,100 @@ oauth = OAuth(app)
 
 nonce = generate_token()
 
-oauth.register(
-    name=os.getenv('OIDC_CLIENT_NAME'),
-    client_id=os.getenv('OIDC_CLIENT_ID'),
-    client_secret=os.getenv('OIDC_CLIENT_SECRET'),
-    # server_metadata_url='http://dex:5556/.well-known/openid-configuration',
-    authorization_endpoint="http://localhost:5556/auth",
-    token_endpoint="http://dex:5556/token",
-    jwks_uri="http://dex:5556/keys",
-    userinfo_endpoint="http://dex:5556/userinfo",
-    device_authorization_endpoint="http://dex:5556/device/code",
-    client_kwargs={'scope': 'openid email profile'}
-)
+# oauth.register(
+#     name=os.getenv('OIDC_CLIENT_NAME'),
+#     client_id=os.getenv('OIDC_CLIENT_ID'),
+#     client_secret=os.getenv('OIDC_CLIENT_SECRET'),
+#     # server_metadata_url='http://dex:5556/.well-known/openid-configuration',
+#     authorization_endpoint="http://localhost:5556/auth",
+#     token_endpoint="http://dex:5556/token",
+#     jwks_uri="http://dex:5556/keys",
+#     userinfo_endpoint="http://dex:5556/userinfo",
+#     device_authorization_endpoint="http://dex:5556/device/code",
+#     client_kwargs={'scope': 'openid email profile'}
+# )
 CORS(app, supports_credentials=True, origins=['http://localhost:5173'])
+
+
+google = oauth.register(
+    name='google',
+    client_id=client_id,
+    client_secret=client_secret,
+    access_token_url='https://oauth2.googleapis.com/token',
+    access_token_params=None,
+    authorize_url='https://accounts.google.com/o/oauth2/v2/auth',
+    authorize_params=None,
+    userinfo_endpoint='https://openidconnect.googleapis.com/v1/userinfo',
+    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+    client_kwargs={'scope': 'openid email profile'},
+)
 
 # Mongo connection
 mongo_uri = os.getenv("MONGO_URI")
 mongo = MongoClient(mongo_uri)
 db = mongo.get_database()
 
-# @app.route('/')
+@app.route('/')
 @app.route('/<path:path>')
 def serve_frontend(path=''):
     if path != '' and os.path.exists(os.path.join(static_path,path)):
         return send_from_directory(static_path, path)
     return send_from_directory(template_path, 'index.html')
 
-@app.route('/home')
-def home():
+# @app.route('/home')
+# def home():
+#     user = session.get('user')
+#     if user:
+#         return f"<h2>Logged in as {user['email']}</h2><a href='http://localhost:8000/logout'>Logout</a>"
+#     return '<a href="http://localhost:8000/login" id="login">Login with Dex</a>'
+
+# @app.route('/login')
+# def login():
+#     session['nonce'] = nonce
+#     redirect_uri = 'http://localhost:8000/authorize'
+#     return oauth.flask_app.authorize_redirect(redirect_uri, nonce=nonce)
+
+# @app.route('/authorize')
+# def authorize():
+#     token = oauth.flask_app.authorize_access_token()
+#     nonce = session.get('nonce')
+
+#     user_info = oauth.flask_app.parse_id_token(token, nonce=nonce)  # or use .get('userinfo').json()
+#     session['user'] = user_info
+#     session['user_type'] = user_info['name']
+#     return redirect('http://localhost:5173')
+
+# @app.route('/logout')
+# def logout():
+#     session.clear()
+#     return jsonify({"message": "Logged out"}), 200
+
+@app.route('/api/me')
+def get_current_user():
     user = session.get('user')
     if user:
-        return f"<h2>Logged in as {user['email']}</h2><a href='http://localhost:8000/logout'>Logout</a>"
-    return '<a href="http://localhost:8000/login" id="login">Login with Dex</a>'
+        return jsonify(user)
+    return jsonify({"error": "Not logged in"}), 401
 
 @app.route('/login')
 def login():
+    redirect_uri = url_for('auth', _external=True)
     session['nonce'] = nonce
-    redirect_uri = 'http://localhost:8000/authorize'
-    return oauth.flask_app.authorize_redirect(redirect_uri, nonce=nonce)
+    return google.authorize_redirect(redirect_uri, nonce=nonce)
 
-@app.route('/authorize')
-def authorize():
-    token = oauth.flask_app.authorize_access_token()
+@app.route('/auth')
+def auth():
+    token = google.authorize_access_token()
     nonce = session.get('nonce')
-
-    user_info = oauth.flask_app.parse_id_token(token, nonce=nonce)  # or use .get('userinfo').json()
+    user_info = google.parse_id_token(token, nonce=nonce)
     session['user'] = user_info
-    session['user_type'] = user_info['name']
     return redirect('http://localhost:5173')
 
 @app.route('/logout')
 def logout():
+    # session.pop('user', None)
     session.clear()
-    return jsonify({"message": "Logged out"}), 200
+    return redirect('http://localhost:5173')
 
 @app.route("/is_signed_in")
 def is_signed_in():
@@ -121,15 +165,6 @@ def get_tasks(user_id):
         tasks = user[0]['tasks']
         return jsonify({"tasks": tasks})
     
-@app.route("/get_events/<user_id>", methods=["GET"])
-def get_events(user_id):
-    user = find_user(user_id)
-    if len(user) == 0:
-        return jsonify({"events": {}})
-    else:
-        events = user[0]['events']
-        return jsonify({"events": events})
-    
 @app.route("/get_teams/<user_id>", methods=["GET"])
 def get_teams(user_id):
     user = find_user(user_id)
@@ -147,7 +182,7 @@ def create_note():
     title = str(request_dictionary['note_title'])
     user = find_user(user_id)
     if len(user) == 0:
-        db.notes.insert_one({"ID": user_id, "notes": {}, "tasks": {}, "events": {}, "teams": {}})
+        db.notes.insert_one({"ID": user_id, "notes": {}, "tasks": {}, "teams": {}})
         db.notes.update_one({"ID": user_id}, {"$set": {f"notes.{title}": note}})
     else:
         db.notes.update_one({"ID": user_id}, {"$set": {f"notes.{title}": note}})
@@ -159,37 +194,20 @@ def create_task():
     user_id = request_dictionary['user_id']
     task_name = request_dictionary['task_name']
     task_description = request_dictionary['task_description']
-    tags = request_dictionary['tags']
-    priority = request_dictionary['priority']
-    due_date = request_dictionary['due_date']
+    task_location = request_dictionary['task_location']
+    task_color = request_dictionary['task_color']
+    task_label = request_dictionary['task_label']
+    task_start_time = request_dictionary['task_start_time']
+    task_end_time = request_dictionary['task_end_time']
+    task_date = request_dictionary['task_date']
+    task_tags = request_dictionary['task_tags']
+    task_priority = request_dictionary['task_priority']
     user = find_user(user_id)
     if len(user) == 0:
-        db.notes.insert_one({"ID": user_id, "tasks": {}, "notes": {}, "events": {}, "teams": {}})
-        db.notes.update_one({"ID": user_id}, {"$set": {f"tasks.{task_name}": {"task_description": task_description, "tags": tags, "priority": priority, "due_date": due_date}}})
+        db.notes.insert_one({"ID": user_id, "tasks": {}, "notes": {}, "teams": {}})
+        db.notes.update_one({"ID": user_id}, {"$set": {f"tasks.{task_name}": {"task_description": task_description, "task_location": task_location, "task_color": task_color, "task_label": task_label, "task_start_time": task_start_time, "task_end_time": task_end_time, "task_date": task_date, "task_tags": task_tags, "task_priority": task_priority}}})
     else:
-        db.notes.update_one({"ID": user_id}, {"$set": {f"tasks.{task_name}": {"task_description": task_description, "tags": tags, "priority": priority, "due_date": due_date}}})
-    return jsonify({"success": "task created successfully"})
-
-@app.route("/create_event", methods=["POST"])
-def create_event():
-    request_dictionary = request.get_json()
-    user_id = request_dictionary['user_id']
-    event_name = request_dictionary['event_name']
-    event_notes = request_dictionary['event_notes']
-    event_location = request_dictionary['event_location']
-    event_color = request_dictionary['event_color']
-    event_reminder = request_dictionary['event_reminder']
-    event_label = request_dictionary['event_label']
-    event_start_time = request_dictionary['event_start_time']
-    event_end_time = request_dictionary['event_end_time']
-    event_date = request_dictionary['event_date']
-    event_guests = request_dictionary['event_guests']
-    user = find_user(user_id)
-    if len(user) == 0:
-        db.notes.insert_one({"ID": user_id, "events": {}, "tasks": {}, "notes": {}, "teams": {}})
-        db.notes.update_one({"ID": user_id}, {"$set": {f"events.{event_name}": {"event_notes": event_notes, "event_location": event_location, "event_color": event_color, "event_reminder": event_reminder, "event_label": event_label, "event_start_time": event_start_time, "event_end_time": event_end_time, "event_date": event_date, "event_guests": event_guests}}})
-    else:
-        db.notes.update_one({"ID": user_id}, {"$set": {f"events.{event_name}": {"event_notes": event_notes, "event_location": event_location, "event_color": event_color, "event_reminder": event_reminder, "event_label": event_label, "event_start_time": event_start_time, "event_end_time": event_end_time, "event_date": event_date, "event_guests": event_guests}}})
+        db.notes.update_one({"ID": user_id}, {"$set": {f"tasks.{task_name}": {"task_description": task_description, "task_location": task_location, "task_color": task_color, "task_label": task_label, "task_start_time": task_start_time, "task_end_time": task_end_time, "task_date": task_date, "task_tags": task_tags, "task_priority": task_priority}}})
     return jsonify({"success": "event created successfully"})
 
 @app.route("/create_team_task", methods=["POST"])
@@ -204,7 +222,7 @@ def create_team_task():
     task_due_date = request_dictionary['task_due_date']
     user = find_user(user_id)
     if len(user) == 0:
-        db.notes.insert_one({"ID": user_id, "events": {}, "tasks": {}, "notes": {}, "teams": {}})
+        db.notes.insert_one({"ID": user_id, "tasks": {}, "notes": {}, "teams": {}})
         db.notes.update_one({"ID": user_id}, {"$set": {f"teams.{task_team}": {task_name: {"task_description": task_description, "task_assignees": task_assignees, "task_priority": task_priority, "task_due_date": task_due_date}}}})
     else:
         db.notes.update_one({"ID": user_id}, {"$set": {f"teams.{task_team}": {task_name: {"task_description": task_description, "task_assignees": task_assignees, "task_priority": task_priority, "task_due_date": task_due_date}}}})
