@@ -152,6 +152,17 @@
         color: white;
         cursor: pointer;
     }
+    
+    .timeContainer {
+        display:flex;
+        flex-direction: row;
+        width: 50%;
+    }
+    #timeStart, #timeEnd {
+        width: 50%;
+        margin-right: 8px;
+        margin-left: 8px;
+    }
 </style>
 
 <main>
@@ -239,13 +250,32 @@
                 </div>
             {/each}
         </div>
-        <input
-            class="inputBox"
-            type="date"
-            placeholder="enter due date here"
-            bind:value={taskDate}
-            required
-        />
+        <div class="timeContainer">
+            <input
+                class="inputBox"
+                type="date"
+                placeholder="enter due date here"
+                bind:value={taskDate}
+                required
+            />
+            <input
+                class="inputBox"
+                id = "timeStart"
+                type="time"
+                placeholder="enter start time here"
+                bind:value={taskStartTime}
+                required
+            />
+            <p>-</p>
+            <input
+                class="inputBox"
+                id = "timeEnd"
+                type="time"
+                placeholder="enter end time here"
+                bind:value={taskEndTime}
+                required
+            />
+        </div>
         <div class="buttonContainer">
             <button
                 class="submitButton"
