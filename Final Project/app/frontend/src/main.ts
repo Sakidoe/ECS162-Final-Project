@@ -12,15 +12,15 @@ export default app
 "use strict";
 (async function() {
     // // sample of how to add a note to a specific user's notes collection and retrieve all of a user's notes
-    //     const response1 = await fetch("http://localhost:8000/create_note", {
-    //       method: "POST",
-    //       body: JSON.stringify({
-    //         user_id: 'david',
-    //         note: 'testing testing testing testing',
-    //         note_title: 'hello world'
-    //       }),
-    //       headers: {'Content-Type': 'application/json'}
-    //     });
+        // const response1 = await fetch("http://localhost:8000/create_note", {
+        //   method: "POST",
+        //   body: JSON.stringify({
+        //     user_id: 'David Roth',
+        //     note: 'testing testing testing testing',
+        //     note_title: 'hello world'
+        //   }),
+        //   headers: {'Content-Type': 'application/json'}
+        // });
 
     //     const notes = await fetch("http://localhost:8000/get_notes/" + 'david', {
     //       method: "GET",
@@ -32,23 +32,23 @@ export default app
     //       });
 
     // // sample of how to add a task to a specific user's tasks collection and retrieve all of a user's tasks
-    //   const response2 = await fetch("http://localhost:8000/create_task", {
-    //     method: "POST",
-    //     body: JSON.stringify({
-    //       user_id: 'david',
-    //       task_name: 'my first task',
-    //       task_description: "this is my first task",
-    //       task_location: "home",
-    //       task_color: "blue",
-    //       task_label: "work",
-    //       task_start_time: "12:30",
-    //       task_end_time: "1:30",
-    //       task_date: "Friday",
-    //       task_tags: "testing",
-    //       task_priority: "high"
-    //     }),
-    //     headers: {'Content-Type': 'application/json'}
-    //   });
+      // const response2 = await fetch("http://localhost:8000/create_task", {
+      //   method: "POST",
+      //   body: JSON.stringify({
+      //     user_id: 'David Roth',
+      //     task_name: 'my first task',
+      //     task_description: "this is my first task",
+      //     task_location: "home",
+      //     task_color: "blue",
+      //     task_label: "work",
+      //     task_start_time: "12:30",
+      //     task_end_time: "1:30",
+      //     task_date: "6/6/2025",
+      //     task_tags: ["testing"],
+      //     task_priority: "high"
+      //   }),
+      //   headers: {'Content-Type': 'application/json'}
+      // });
 
     //   const tasks = await fetch("http://localhost:8000/get_tasks/" + 'david', {
     //     method: "GET",

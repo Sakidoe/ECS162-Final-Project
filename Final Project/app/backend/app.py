@@ -228,5 +228,14 @@ def create_team_task():
         db.notes.update_one({"ID": user_id}, {"$set": {f"teams.{task_team}": {task_name: {"task_description": task_description, "task_assignees": task_assignees, "task_priority": task_priority, "task_due_date": task_due_date}}}})
     return jsonify({"success": "team task created successfully"})
 
+@app.route("/delete_note", methods=["POST"])
+def delete_note():
+    request_dictionary = request.get_json()
+    note_title = request_dictionary['note_title']
+    user_id = request_dictionary['user_id']
+    user = find_user(user_id)
+    db.notes.update_one({"ID": user_id}, {"$unset": {f"notes.{note_title}": 1}})
+    return jsonify({"success": "note deleted successfully"})
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8000)

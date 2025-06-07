@@ -1,4 +1,6 @@
 <script lang="ts">
+    export let user;
+    export let profile_picture;
     let today = new Date();
     let curDay = today.getDate();
     let month = today.getMonth();
@@ -48,6 +50,95 @@
             chunckedDays.at(-1).push(i);
         }
     }
+
+
+    type Task = {
+        task_description: string;
+        task_location: string;
+        task_color: string;
+        task_label: string;
+        task_start_time: string;
+        task_end_time: string;
+        task_date: string;
+        task_tags: [];
+        task_priority: string;
+    };
+
+    type Note = {
+        note_description: string;
+    }
+
+
+    async function getTasks(user: string): Promise<Record<string, Task>> {
+        return await fetch("http://localhost:8000/get_tasks/" + user, {
+            method: "GET",
+            headers: {'Content-Type': 'application/json'}
+        })
+        .then(response => response.json())
+        .then(data => {
+            return data.tasks;
+        })
+        .catch(error => {
+            console.error("error getting tasks", error);
+        });
+    }
+
+    async function getNotes(user: string): Promise<Record<string, Note>> {
+        return await fetch("http://localhost:8000/get_notes/" + user, {
+            method: "GET",
+            headers: {'Content-Type': 'application/json'}
+        })
+        .then(response => response.json())
+        .then(data => {
+            return data.notes;
+        })
+        .catch(error => {
+            console.error("error getting notes", error);
+        });
+    }
+
+    function delete_note(note_title: string) {
+        const response = fetch("http://localhost:8000/delete_note", { 
+            method: "POST", 
+            body: JSON.stringify({
+                user_id: user, 
+                note_title: note_title
+            }), 
+            headers: {'Content-Type': 'application/json'}
+        });
+        delete notes[note_title];
+        notes = {...notes};
+    }
+
+    let tasks: Record<string, Task>;
+    let notes: Record<string, Note>;
+    let upcoming = [];
+    let loading = true;
+    let task_tags: Record<string, number> = {};
+    let total_tags = 0;
+    async function setup(user: string) {
+        tasks = await getTasks(user);
+        notes = await getNotes(user);
+        for (const [taskname, details] of Object.entries(tasks)) {
+            let date = details.task_date.split('/');
+            if (Number(date[1]) <= curDay + 3 && Number(date[1]) >= curDay) {
+                upcoming.push(taskname);
+            }
+            let tags = details.task_tags;
+            for (let i = 0; i < tags.length; i++) {
+                if (tags[i] in task_tags) {
+                    task_tags[tags[i]] += 1;
+                } else {
+                    task_tags[tags[i]] = 1;
+                }
+                total_tags += 1;
+            }
+        }
+        loading = false;
+    }
+    
+    setup(user);
+    
 </script>
 
 <style>
@@ -115,47 +206,107 @@
         margin-left: 10.7%;
     }
 
+    .month-year {
+        margin-left: 5%;
+    }
+
+    .single-digit-day-next-month {
+        color: gray;
+        margin-left: 10.7%;
+    }
+
+    .profile-picture {
+        width: 10%;
+        height: auto;
+        border-radius: 50%;
+    }
+
+    .user-name {
+        display: inline;
+    }
+
+    .task-name {
+        margin-left: 2%;
+        font-weight: bold;
+        margin-bottom: 0%;
+    }
+
+    .due-date {
+        margin-left: 5%;
+        margin-top: 0%;
+    }
+
 </style>
 
-<main>
-    <div class="calendar">
-        <div class="side-bar">
-            <div class="name">
-                <p>First Name, Last Name</p>
-            </div>
-            <div class="upcoming-events">
-                <p>Upcoming events</p>
-            </div>
-            <div class="mini-calendar">
-                <h3>{monthString}, {year}</h3>
-                {#each weekdays as day}
-                    <label class="weekday-label">{day}</label>
-                {/each}
-                {#each chunckedDays as week, weekIndex}
-                    {#each week as day}
-                        {#if Math.floor(day / 10) == 0}
-                            {#if day == curDay}
-                                <label class="curday-single-digit">{day}</label>
-                            {:else}
-                                <label class="single-digit-day">{day}</label>
-                            {/if}
+
+{#if loading}
+    <p>Loading...</p>
+{:else}
+    <main>
+        <div class="calendar">
+            <div class="side-bar">
+                <div class="name">
+                    <img class="profile-picture" src={profile_picture}/>
+                    <p class="user-name">{user}</p>
+                </div>
+                <div class="upcoming-events">
+                    <h3>Upcoming Events</h3>
+                    {#each upcoming as event}
+                        <p class="task-name">{event}</p>
+                        {#if Number(tasks[event].task_date.split('/')[1]) - curDay == 0}
+                            <p class="due-date">Due Today</p>
                         {:else}
-                            {#if day == curDay}
-                                <label class="curday">{day}</label>
+                            {#if Number(tasks[event].task_date.split('/')[1]) - curDay == 1}
+                                <p class="due-date">Due in {Number(tasks[event].task_date.split('/')[1]) - curDay} day</p>
                             {:else}
-                                <label class="weekday-number">{day}</label>
+                                <p class="due-date">Due in {Number(tasks[event].task_date.split('/')[1]) - curDay} days</p>
                             {/if}
                         {/if}
                     {/each}
-                    <br>
-                {/each}
-            </div>
-            <div class="breakdown">
-                <p>Time breakdown</p>
-            </div>
-            <div class="notes">
-                <p>Notes</p>
+                </div>
+                <div class="mini-calendar">
+                    <h3 class="month-year">{monthString}, {year}</h3>
+                    {#each weekdays as day}
+                        <label class="weekday-label">{day}</label>
+                    {/each}
+                    {#each chunckedDays as week, weekIndex}
+                        {#each week as day}
+                            {#if Math.floor(day / 10) == 0}
+                                {#if weekIndex >= chunckedDays.length - 1}
+                                    <label class="single-digit-day-next-month">{day}</label>
+                                {:else}
+                                    {#if day == curDay}
+                                        <label class="curday-single-digit">{day}</label>
+                                    {:else}
+                                        <label class="single-digit-day">{day}</label>
+                                    {/if}
+                                {/if}
+                            {:else}
+                                {#if day == curDay}
+                                    <label class="curday">{day}</label>
+                                {:else}
+                                    <label class="weekday-number">{day}</label>
+                                {/if}
+                            {/if}
+                        {/each}
+                        <br>
+                    {/each}
+                </div>
+                <div class="breakdown">
+                    <h3>Time Breakdown</h3>
+                    {#each Object.entries(task_tags) as [tag, num]}
+                        <p>{tag}: {num}</p>
+                    {/each}
+                </div>
+                <div class="notes">
+                    <h3>Notes</h3>
+                    {#each Object.entries(notes) as [title, note]}
+                        <h4>{title}:</h4>
+                        <p>{note}</p>
+                        <button on:click={() => delete_note(title)}>Resolve</button>
+                    {/each}
+                </div>
             </div>
         </div>
-    </div>
-</main>
+    </main>
+{/if}

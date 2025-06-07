@@ -7,7 +7,7 @@
   onMount(async () => {
     try {
       const res = await fetch("http://localhost:8000/api/me", {
-        credentials: "include" // ← VERY IMPORTANT: sends the session cookie!
+        credentials: "include" 
       });
       if (res.ok) {
         user = await res.json();
@@ -21,15 +21,17 @@
   const logout = () => window.location.href = "http://localhost:8000/logout";
   const log_user = () => console.log(user);
 </script>
-<!-- 
+
 {#if user}
   <button on:click={logout}>Logout</button>
-  <button on:click={log_user}>Log User</button>
+  <!-- <button on:click={log_user}>Log User</button> -->
 {:else}
   <button on:click={login}>Login with Google</button>
-{/if} -->
+{/if}
 
 
 <main>
-    <Calendar />
+    {#if user}
+      <Calendar user={user.name} profile_picture={user.picture}/>
+    {/if}
 </main>
