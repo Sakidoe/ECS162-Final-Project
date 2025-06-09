@@ -1,4 +1,6 @@
 <script lang="ts">
+    import './calendar.css';
+
     export let user;
     export let profile_picture;
     let today = new Date();
@@ -151,183 +153,6 @@
 </script>
 
 <style>
-    .calendar {
-        display: grid;
-        grid-template-columns: 25vw 75vw;
-        height: 100vh;
-    }
-
-    .side-bar {
-        grid-area: 1;
-        display: grid;
-        grid-template-rows: repeat(5, auto [row-start]);
-        background-color: white;
-        border: 2px solid black;
-    }
-
-    .name {
-        grid-row: 1;
-        border: 2px solid black;
-    }
-
-    .upcoming-events {
-        grid-row: 2;
-        border: 2px solid black;
-    }
-
-    .mini-calendar {
-        grid-row: 3;
-        border: 2px solid black;
-    }
-
-    .breakdown {
-        grid-row: 4;
-        border: 2px solid black;
-    }
-
-    .notes {
-        grid-row: 5;
-        border: 2px solid black;
-    }
-
-    .weekday-label {
-        margin-left: 10%;
-    }
-
-    .weekday-number {
-        margin-left: 9%;
-    }
-
-    .curday {
-        background-color: blue;
-        color: white;
-        border-radius: 50%;
-        margin-left: 9%;
-    }
-
-    .curday-single-digit {
-        background-color: blue;
-        color: white;
-        border-radius: 50%;
-        margin-left: 10.7%;
-    }
-
-    .single-digit-day {
-        margin-left: 10.7%;
-    }
-
-    .month-year {
-        margin-left: 5%;
-    }
-
-    .single-digit-day-next-month {
-        color: gray;
-        margin-left: 10.7%;
-    }
-
-    .previous-month-days {
-        color: gray;
-        margin-left: 9%;
-    }
-
-    .profile-picture {
-        width: 10%;
-        height: auto;
-        border-radius: 50%;
-    }
-
-    .user-name {
-        display: inline;
-    }
-
-    .task-name {
-        margin-left: 2%;
-        font-weight: bold;
-        margin-bottom: 0%;
-    }
-
-    .due-date {
-        margin-left: 5%;
-        margin-top: 0%;
-    }
-
-    .main-calendar {
-        grid-area: 1;
-        display: grid;
-        grid-template-columns: repeat(7, 14.28% [col-start]);
-        grid-template-rows: repeat(8, 14.28% [row-start]);
-        margin-left: 1%;
-    }
-
-    .calendar-box {
-        grid-column: var(--col_index);
-        grid-row: var(--row_index);
-        border: 2px solid black;
-    }
-
-    .calendar-header {
-        grid-row: 1;
-        grid-column: 1 span 7;
-    }
-
-    .main-calendar-previous-or-next-month-days {
-        color: gray;
-        font-size: 20px;
-        margin-left: 5%;
-    }
-
-    .main-calendar-days {
-        color: black;
-        font-size: 20px;
-        margin-left: 5%;
-    }
-
-    .week-headings {
-        grid-column: var(--col_index);
-        grid-row: var(--row_index);
-        color: black;
-        font-size: 20px;
-        text-align: center;
-        border-radius: 10%;
-        height: 80px;
-        margin-left: 5%;
-        margin-right: 5%;
-        border: 2px solid gray;
-        background-color: var(--color);
-    }
-
-    .calendar-task-month-page {
-        background-color: var(--background_color);
-        border-radius: 6%;
-        margin-left: 2%;
-        margin-right: 2%;
-        margin-top: 0%;
-        margin-bottom: 0%;
-        color: var(--text_color);
-    }
-
-    .week-calendar-box {
-        grid-column: var(--col_index);
-        grid-row-start: 3;
-        grid-row-end: 8;
-        border: 2px solid black;
-    }
-
-    .day-calendar-box {
-        grid-column-start: 1;
-        grid-column-end: 8;
-        grid-row-start: 3;
-        grid-row-end: 8;
-        border: 2px solid black;
-    }
-
-    .calendar-task-day-page {
-        background-color: var(--background_color);
-        color: var(--text_color);
-        border-radius: 6%;
-        margin-left: 2%;
-        margin-right: 2%;
-    }
 
 </style>
 
@@ -340,7 +165,7 @@
             <div class="side-bar">
                 <div class="name">
                     <img class="profile-picture" src={profile_picture}/>
-                    <p class="user-name">{user}</p>
+                    <h3 class="user-name">{user}</h3>
                 </div>
                 <div class="upcoming-events">
                     <h3>Upcoming Events</h3>
@@ -363,13 +188,14 @@
                         <label class="weekday-label">{day}</label>
                     {/each}
                     {#each chunckedDays as week, weekIndex}
+                    <div class="weeks">
                         {#each week as day}
                             {#if Math.floor(day / 10) == 0}
                                 {#if weekIndex >= chunckedDays.length - 1}
                                     <label class="single-digit-day-next-month">{day}</label>
                                 {:else}
                                     {#if day == curDay}
-                                        <label class="curday-single-digit">{day}</label>
+                                        <label class="curday-single-digit"><span class="circular-background">{day}</span></label>
                                     {:else}
                                         <label class="single-digit-day">{day}</label>
                                     {/if}
@@ -379,7 +205,7 @@
                                     {#if day > 20}
                                         <label class="previous-month-days">{day}</label>
                                     {:else if day == curDay}
-                                        <label class="curday">{day}</label>
+                                        <label class="curday"><span class="circular-background">{day}</span></label>
                                     {:else}
                                         <label class="weekday-number">{day}</label>
                                     {/if}
@@ -392,11 +218,12 @@
                                 {/if}
                             {/if}
                         {/each}
-                        <br>
+                        <!-- <br> -->
+                        </div>
                     {/each}
-                </div>
+                    </div>
                 <div class="breakdown">
-                    <h3>Time Breakdown</h3>
+                    <h3 class="time-breakdown-inside">Time Breakdown</h3>
                     {#each Object.entries(task_tags) as [tag, num]}
                         <p>{tag}: {num}</p>
                     {/each}
