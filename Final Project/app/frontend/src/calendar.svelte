@@ -348,64 +348,50 @@
                     {/each}
                 </div>
             </div>
-            <div class="main-calendar">
+
+
+            <div class="main-calendar-exclude">
                 <div class="calendar-header">
-                    <h2>{monthString}, {year}</h2>
-                    <button on:click={() => calendar_view = 1}>Month</button>
-                    <button on:click={() => calendar_view = 2}>Week</button>
-                    <button on:click={() => calendar_view = 3}>Day</button>
-                    <button on:click={backArrow}>&lt;</button>
-                    <label>Today</label>
-                    <button on:click={forwardArrow}>&gt;</button>
+                    <h2 class = "month-year">{monthString}, {year}</h2>
+                    <div class="date-buttons">
+                        <button class="indv-date-buttons" class:curr_tab={calendar_view === 1} on:click={() => calendar_view = 1}>Month</button>
+                        <button class="indv-date-buttons" class:curr_tab={calendar_view === 2} on:click={() => calendar_view = 2}>Week</button>
+                        <button class="indv-date-buttons" class:curr_tab={calendar_view === 3} on:click={() => calendar_view = 3}>Day</button>
+                    </div>
                 </div>
-                {#if calendar_view == 1 || calendar_view == 2}
-                    {#each Array(7) as _, index (index)}
-                        {#if weekday == index}
-                            <div class="week-headings" style="--row_index: {2}; --col_index: {index + 1}; --color: green">
-                                <h3>{weekdays_spelled_out[index]}</h3>
-                            </div>
-                        {:else}
-                            <div class="week-headings" style="--row_index: {2}; --col_index: {index + 1}">
-                                <h3>{weekdays_spelled_out[index]}</h3>
-                            </div>
-                        {/if}
-                    {/each}
-                {/if}
-                {#if calendar_view == 1}
-                    {#each Array(6) as _, row (row)}
-                        {#each Array(7) as _, col (col)}
-                            {#if row == 0}
-                                {#if mainCalendarDays[row][col] > 8}
-                                    <div class="calendar-box" style="--row_index: {row + 3}; --col_index: {col + 1}">
-                                        <p class="main-calendar-previous-or-next-month-days">{mainCalendarDays[row][col]}</p>
-                                        {#each Object.entries(tasks) as [title, details]}
-                                            {#if Number(details.task_date.split('/')[0]) == month && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
-                                                <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white">{title}</p>
-                                            {/if}
-                                        {/each}
-                                    </div>
-                                {:else}
-                                    <div class="calendar-box" style="--row_index: {row + 3}; --col_index: {col + 1}">
-                                        <p class="main-calendar-days">{mainCalendarDays[row][col]}</p>
-                                        {#each Object.entries(tasks) as [title, details]}
-                                            {#if Number(details.task_date.split('/')[0]) == month + 1 && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
-                                                <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white">{title}</p>
-                                            {/if}
-                                        {/each}
-                                    </div>
-                                {/if}
-                            {:else if row >= 4}
-                                    {#if mainCalendarDays[row][col] < 15}
-                                        <div class="calendar-box" style="--row_index: {row + 3}; --col_index: {col + 1}">
+                <div class="main-calendar">
+                    <div class = "week-headings-only">
+                    {#if calendar_view == 1 || calendar_view == 2}
+                        {#each Array(7) as _, index (index)}
+                            {#if weekday == index}
+                                <div class="week-headings" style="--row_index: {1}; --col_index: {index + 1}; --color: green">
+                                    <h3 class = "weekdays">{weekdays_spelled_out[index]}</h3>
+                                </div>
+                            {:else}
+                                <div class="week-headings" style="--row_index: {1}; --col_index: {index + 1}">
+                                    <h3 class = "weekdays">{weekdays_spelled_out[index]}</h3>
+                                </div>
+                            {/if}
+                        {/each}
+                    {/if}
+                    </div>
+
+                    <div class="calendar-dates">
+                        {#if calendar_view == 1}
+                        {#each Array(6) as _, row (row)}
+                            {#each Array(7) as _, col (col)}
+                                {#if row == 0}
+                                    {#if mainCalendarDays[row][col] > 8}
+                                        <div class="calendar-box" style="--row_index: {row + 1}; --col_index: {col + 1}">
                                             <p class="main-calendar-previous-or-next-month-days">{mainCalendarDays[row][col]}</p>
                                             {#each Object.entries(tasks) as [title, details]}
-                                                {#if Number(details.task_date.split('/')[0]) == month + 2 && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
+                                                {#if Number(details.task_date.split('/')[0]) == month && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
                                                     <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white">{title}</p>
                                                 {/if}
                                             {/each}
                                         </div>
                                     {:else}
-                                        <div class="calendar-box" style="--row_index: {row + 3}; --col_index: {col + 1}">
+                                        <div class="calendar-box" style="--row_index: {row + 1}; --col_index: {col + 1}">
                                             <p class="main-calendar-days">{mainCalendarDays[row][col]}</p>
                                             {#each Object.entries(tasks) as [title, details]}
                                                 {#if Number(details.task_date.split('/')[0]) == month + 1 && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
@@ -414,50 +400,59 @@
                                             {/each}
                                         </div>
                                     {/if}
-                            {:else}
-                                <div class="calendar-box" style="--row_index: {row + 3}; --col_index: {col + 1}">
-                                    <p class="main-calendar-days">{mainCalendarDays[row][col]}</p>
-                                    {#each Object.entries(tasks) as [title, details]}
-                                        {#if Number(details.task_date.split('/')[0]) == month + 1 && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
-                                            <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white">{title}</p>
+                                {:else if row >= 4}
+                                        {#if mainCalendarDays[row][col] < 15}
+                                            <div class="calendar-box" style="--row_index: {row + 1}; --col_index: {col + 1}">
+                                                <p class="main-calendar-previous-or-next-month-days">{mainCalendarDays[row][col]}</p>
+                                                {#each Object.entries(tasks) as [title, details]}
+                                                    {#if Number(details.task_date.split('/')[0]) == month + 2 && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
+                                                        <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white">{title}</p>
+                                                    {/if}
+                                                {/each}
+                                            </div>
+                                        {:else}
+                                            <div class="calendar-box" style="--row_index: {row + 1}; --col_index: {col + 1}">
+                                                <p class="main-calendar-days">{mainCalendarDays[row][col]}</p>
+                                                {#each Object.entries(tasks) as [title, details]}
+                                                    {#if Number(details.task_date.split('/')[0]) == month + 1 && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
+                                                        <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white">{title}</p>
+                                                    {/if}
+                                                {/each}
+                                            </div>
                                         {/if}
-                                    {/each}
-                                </div>          
-                            {/if}
+                                {:else}
+                                    <div class="calendar-box" style="--row_index: {row + 1}; --col_index: {col + 1}">
+                                        <p class="main-calendar-days">{mainCalendarDays[row][col]}</p>
+                                        {#each Object.entries(tasks) as [title, details]}
+                                            {#if Number(details.task_date.split('/')[0]) == month + 1 && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
+                                                <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white">{title}</p>
+                                            {/if}
+                                        {/each}
+                                    </div>          
+                                {/if}
+                            {/each}
                         {/each}
-                    {/each}
-                {:else if calendar_view == 2}
-                    <div class="timestamps">
-                        {#each times as time, _}
-                            <p>{time}</p>
+                    <!-- </div> -->
+                
+                    {:else if calendar_view == 2}
+                        {#each Array(7) as _, index (index)}
+                            <div class="week-calendar-box" style="--col_index: {index + 1}">
+                                <p>{index}</p>
+                            </div>
                         {/each}
-                    </div>
-                    {#each weekDates as week, index}
-                        <div class="week-calendar-box" style="--col_index: {index + 2}">
-                            <label>{week.split('/')[1]}</label>
+                    {:else}
+                        <div class="week-headings" style="--row_index: {2}; --col_index: {1}">
+                            <h3>{weekdays_spelled_out[weekday]} {curDay}</h3>
+                        </div>
+                        <div class="day-calendar-box">
                             {#each Object.entries(tasks) as [title, details]}
-                                    {#if Number(details.task_date.split('/')[0]) == Number(week.split('/')[0]) && Number(details.task_date.split('/')[1]) == Number(week.split('/')[1]) && Number(details.task_date.split('/')[2]) == Number(week.split('/')[2])}
-                                        <div class="day-box" style="--row_start: {details.task_start_time}; --row_end: {details.task_end_time}">
-                                            {console.log(details.task_start_time)}
-                                            {console.log(details.task_end_time)}
-                                            <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white">{title}</p>
-                                        </div>
-                                    {/if}
+                                {#if Number(details.task_date.split('/')[0]) == month + 1 && Number(details.task_date.split('/')[1]) == curDay && Number(details.task_date.split('/')[2]) == year}
+                                    <p class="calendar-task-day-page" style="--background_color: {details.task_color}; --text_color: white">{title}</p>
+                                {/if}
                             {/each}
                         </div>
-                    {/each}
-                {:else}
-                    <div class="week-headings" style="--row_index: {2}; --col_index: {1}">
-                        <h3>{weekdays_spelled_out[weekday]} {curDay}</h3>
-                    </div>
-                    <div class="day-calendar-box">
-                        {#each Object.entries(tasks) as [title, details]}
-                            {#if Number(details.task_date.split('/')[0]) == month + 1 && Number(details.task_date.split('/')[1]) == curDay && Number(details.task_date.split('/')[2]) == year}
-                                <p class="calendar-task-day-page" style="--background_color: {details.task_color}; --text_color: white">{title}</p>
-                            {/if}
-                        {/each}
-                    </div>
-                {/if}
+                    {/if}
+                </div>
             </div>
         </div>
     </main>
