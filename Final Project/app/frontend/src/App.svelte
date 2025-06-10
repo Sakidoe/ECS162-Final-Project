@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { Task } from "./task.svelte";
+
   let sidebarOpen = false;
 
   let tasks = [];
@@ -26,32 +28,32 @@
     }
   }
 
-  async function createTask() {
-    if (!newTaskTitle || !newTaskTag) return alert("Fill out all fields.");
-    await fetch("http://localhost:8000/create_task", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        user_id: userId,
-        task_name: newTaskTitle,
-        task_description: "n/a",
-        task_location: "n/a",
-        task_color: "gray",
-        task_label: "n/a",
-        task_start_time: "00:00",
-        task_end_time: "01:00",
-        task_date: "unknown",
-        task_tags: newTaskTag,
-        task_priority: newTaskPriority,
-        status: "task"
-      }),
-    });
-    newTaskTitle = "";
-    newTaskTag = "";
-    newTaskPriority = "medium";
-    showCreateForm = false;
-    fetchTasks();
-  }
+  // async function createTask() {
+  //   if (!newTaskTitle || !newTaskTag) return alert("Fill out all fields.");
+  //   await fetch("http://localhost:8000/create_task", {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify({
+  //       user_id: userId,
+  //       task_name: newTaskTitle,
+  //       task_description: "n/a",
+  //       task_location: "n/a",
+  //       task_color: "gray",
+  //       task_label: "n/a",
+  //       task_start_time: "00:00",
+  //       task_end_time: "01:00",
+  //       task_date: "unknown",
+  //       task_tags: newTaskTag,
+  //       task_priority: newTaskPriority,
+  //       status: "task"
+  //     }),
+  //   });
+  //   newTaskTitle = "";
+  //   newTaskTag = "";
+  //   newTaskPriority = "medium";
+  //   showCreateForm = false;
+  //   fetchTasks();
+  // }
 
   async function updateStatus(taskId: number, newStatus: string) {
     const task = tasks.find(t => t.id === taskId);
@@ -131,7 +133,9 @@
               <option value="medium">medium</option>
               <option value="low">low</option>
             </select>
-            <button on:click={createTask}>✔</button>
+            <!-- <button on:click={createTask}> -->
+            <button>
+              ✔</button>
             <button on:click={() => showCreateForm = false}>✕</button>
           {:else}
             <button on:click={() => showCreateForm = true}>＋</button> create a new task
