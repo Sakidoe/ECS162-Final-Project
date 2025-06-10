@@ -82,6 +82,10 @@
 </script>
 
 <style>
+    input, textarea, label{
+        font-family: Playfair Display;
+        font-size: 16px;
+    }
     .close {
         position: absolute;
         top: 8px;
