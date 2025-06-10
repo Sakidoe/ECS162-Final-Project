@@ -234,6 +234,10 @@
         grid-template-columns: repeat(7, 1fr);
     }
 
+    .week-headings-only .week-calendar-box{
+        border: 1px solid rgba(104, 125, 49, 1);
+    }
+
     .calendar-dates{
         aspect-ratio: 1/1;
         display: grid;
@@ -244,6 +248,8 @@
     .weekdays{
         font-weight: 200;
         margin: 0;
+        padding: 10px;
+        border-radius: 15px;
     }
 
     .calendar-task-month-page {
@@ -261,12 +267,27 @@
         grid-template-rows: repeat(24, 1/24 [row-start]);
         grid-template-columns: 1;
         grid-column: var(--col_index);
-        grid-row-start: 3;
-        grid-row-end: 8;
-        border: 2px solid black;
-        margin-left: 5%;
+        grid-row-start: 1;
+        grid-row-end: 6;
+        /* border-right: 1px solid rgba(104, 125, 49, 1); */
+        /* margin-left: 5%; */
+        margin: 10px;
+        padding: 0;
         font-size: 20px;
         color: black;
+        justify-content: center;
+        /* align-items: center; */
+        font-size: 17px;
+        border-radius: 5px;
+    }
+
+    .calendar-dates .week-calendar-box {
+        border-right: 1px solid rgba(104, 125, 49, 1);
+        border-radius: 0;
+    }
+
+    .calendar-dates .week-calendar-box:last-child{
+        border-right: none;
     }
 
     .day-box {

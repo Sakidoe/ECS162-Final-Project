@@ -398,9 +398,9 @@
                     </div>
                 </div>
                 <div class="main-calendar">
-                    <div class = "week-headings-only">
-                    {#if calendar_view == 1 || calendar_view == 2}
-                        {#each Array(7) as _, index (index)}
+                    <!-- <div class = "week-headings-only"> -->
+                    <!-- {#if calendar_view == 1 || calendar_view == 2} -->
+                        <!-- {#each Array(7) as _, index (index)}
                             {#if weekday == index}
                                 <div class="week-headings" style="--row_index: {1}; --col_index: {index + 1}; --color: green">
                                     <h3 class = "weekdays">{weekdays_spelled_out[index]}</h3>
@@ -410,9 +410,18 @@
                                     <h3 class = "weekdays">{weekdays_spelled_out[index]}</h3>
                                 </div>
                             {/if}
-                        {/each}
+                        {/each} -->
+                    {#if calendar_view == 2}
+                        <div class = "week-headings-only">
+                            {#each weekDates as weekAndDate, index}
+                                <div class="week-calendar-box" style="--col_index: {index + 1}">
+                                    <h3 class="weekdays">
+                                        {weekdays_spelled_out[index]} {weekAndDate.split('/')[1]}
+                                    </h3>
+                                </div>
+                            {/each}
+                        </div>
                     {/if}
-                    </div>
 
                     <div class="calendar-dates">
                         {#if calendar_view == 1}
@@ -473,21 +482,9 @@
                     <!-- </div> -->
                 
                     {:else if calendar_view == 2}
-                        <div class="timestamps">
-                            {#each times as time, _}
-                                <p>{time}</p>
-                            {/each}
-                        </div>
-                        {#each weekDates as week, index}
-                            <div class="week-calendar-box" style="--col_index: {index + 2}">
-                                <p class="main-calendar-days">{week.split('/')[1]}</p>
-                                {#each Object.entries(tasks) as [title, details]}
-                                        {#if Number(details.task_date.split('/')[0]) == Number(week.split('/')[0]) && Number(details.task_date.split('/')[1]) == Number(week.split('/')[1]) && Number(details.task_date.split('/')[2]) == Number(week.split('/')[2])}
-                                            <div class="day-box" style="--row_start: {details.task_start_time}; --row_end: {details.task_end_time}">
-                                                <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white">{title}</p>
-                                            </div>
-                                        {/if}
-                                {/each}
+                        {#each Array(7) as _, index (index)}
+                            <div class="week-calendar-box" style="--col_index: {index + 1}">
+                                <p></p>
                             </div>
                         {/each}
                     {:else}
