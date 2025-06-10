@@ -1,5 +1,7 @@
 <script>
-    let checked=false;
+    let showTaskBox = true; // Controls the visibility of the task box
+
+    let checked = false;
     let allTags = [
         { name: 'school', checked: false },
         { name: 'work', checked: false },
@@ -13,10 +15,10 @@
         { name: 'low', checked: false },
         { name: 'medium', checked: false },
         { name: 'high', checked: false }
-    ]
+    ];
 
+    let userID = "";
     let selectedTags = [];
-
     let taskName = "";
     let taskDescription = "";
     let taskDate = "";
@@ -24,11 +26,9 @@
     let taskStartTime = "";
     let taskEndTime = "";
     let taskColor = "";
-    let taskLabel ="";
-
+    let taskLabel = "";
     let priorityOptions = ['low', 'medium', 'high'];
     let selectedPriority = ''; 
-
     let feedback = "";
 
     async function createTask() {
@@ -37,48 +37,53 @@
         .map((t) => t.name);
 
         const payload = {
-        user_id:         'david',          // hard‐coded rn
-        task_name:       taskName,
-        task_description: taskDescription,
-        task_tags:             selectedTags,     // send an array of strings
-        task_priority:         selectedPriority, // single string
-        task_date:         taskDate,          //  "2025-06-15"
-        task_start_time: taskStartTime,
-        task_end_time:   taskEndTime,     
-        task_location:   taskLocation,
-        task_color:     taskColor,
-        task_label: taskLabel
+            user_id: userID, 
+            task_name: taskName,
+            task_description: taskDescription,
+            task_tags: selectedTags, // send an array of strings
+            task_priority: selectedPriority, // single string
+            task_date: taskDate, // "2025-06-15"
+            task_start_time: taskStartTime,
+            task_end_time: taskEndTime,     
+            task_location: taskLocation,
+            task_color: taskColor,
+            task_label: taskLabel
         };
 
         try {
-        const res = await fetch("http://localhost:8000/create_task", {
-            method:  "POST",
-            headers: { "Content-Type": "application/json" },
-            body:    JSON.stringify(payload)
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const res = await fetch("http://localhost:8000/create_task", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-        const data = await res.json();
-        if (data.success) {
-            feedback = "Task created successfully";
-            taskName = "";
-            taskDescription = "";
-            taskDate = "";
-            allTags.forEach((t) => (t.checked = false));
-            selectedTags = [];
-            selectedPriority = '';
-            taskStartTime = "";
-            taskEndTime = "";
-            taskLocation = "";
-            taskColor = "";
-            taskLabel = "";
-        } else {
-            feedback = "Unexpected response: " + JSON.stringify(data);
-        }
+            const data = await res.json();
+            if (data.success) {
+                feedback = "Task created successfully";
+                resetTaskBox();
+                showTaskBox = false; // Hide the task box after submission
+            } else {
+                feedback = "Unexpected response: " + JSON.stringify(data);
+            }
         } catch (err) {
-        feedback = "Error: " + err.message;
+            feedback = "Error: " + err.message;
         }
-    } 
+    }
+
+    function resetTaskBox() {
+        taskName = "";
+        taskDescription = "";
+        taskDate = "";
+        allTags.forEach((t) => (t.checked = false));
+        selectedTags = [];
+        selectedPriority = '';
+        taskStartTime = "";
+        taskEndTime = "";
+        taskLocation = "";
+        taskColor = "";
+        taskLabel = "";
+    }
 </script>
 
 <style>
@@ -235,8 +240,8 @@
 </style>
 
 <main>
+    {#if showTaskBox}
     <div class="blur">
-
         <div class="background">
             <div class="close">
                 <button
@@ -244,17 +249,8 @@
                     type="button"
                     on:click={() => {
                         console.log('Close button clicked');
-                        taskName = "";
-                        taskDescription = "";
-                        taskDate = "";
-                        allTags.forEach((t) => (t.checked = false));
-                        selectedTags = [];
-                        selectedPriority = '';
-                        taskStartTime = "";
-                        taskEndTime = "";
-                        taskLocation = "";
-                        taskColor = "";
-                        taskLabel = "";
+                        resetTaskBox();
+                        showTaskBox = false; // Hide the task box on close
                     }}
                 >
                     X
@@ -387,6 +383,7 @@
                     on:click={() => {
                         console.log('Task submitted with tags:', selectedTags);
                         createTask();
+                        showTaskBox = false; // Hide the task box after submission
                     }}
                     disabled={!taskName}
                 >
@@ -395,4 +392,5 @@
             </div>
         </div>
     </div>
+    {/if}
 </main>
