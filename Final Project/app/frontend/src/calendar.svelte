@@ -1,5 +1,7 @@
 <script lang="ts">
     import './calendar.css';
+    import Modal from './Modal.svelte';
+    let show_note_modal = $state(false);
   
     let properties = $props();
     let user = properties.user;
@@ -17,7 +19,7 @@
     let current_viewing_month = $state(month);
     let current_viewing_year = $state(year);
 
-    let firstDay = new Date(current_viewing_year, current_viewing_month, 1);
+    let firstDay = new Date(year, month, 1);
     let firstWeekday = firstDay.getDay();
     let weekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
     let weekdays_spelled_out = ['SUN', 'MON', 'TUES', 'WEDS', 'THURS', 'FRI', 'SAT'];
@@ -48,7 +50,7 @@
     let paddingArray = Array.from({length: numPaddingDays}, (_, i) => numDaysInPreviousMonth - (numPaddingDays - i - 1));
     let daysArray = Array.from({length: numDaysInCurMonth}, (_, i) => i + 1);
     let allDaysArray = [...paddingArray, ...daysArray];
-    const chunckedDays = [];
+    const chunckedDays: any[] = [];
     for (let i = 0; i < allDaysArray.length; i += 7) {
         chunckedDays.push(allDaysArray.slice(i, i + 7));
     }
@@ -126,13 +128,35 @@
         notes = {...notes};
     }
 
+    function add_note(note_title: string, note_description: string) {
+        fetch("http://localhost:8000/create_note", {
+            method: "POST",
+            body: JSON.stringify({
+                user_id: user,
+                note_title: note_title,
+                note: note_description
+            }),
+            headers: {'Content-Type': 'application/json'}
+        });
+        notes[note_title] = {
+            note_description: note_description
+        };
+        notes = {...notes};
+        note_description_text_input = '';
+        note_title_text_input = '';
+        show_note_modal = false;
+    }
+
+    let note_title_text_input = $state('');
+    let note_description_text_input = $state('');
+
     let calendar_view = $state(1);
 
-    let tasks: Record<string, Task>;
-    let notes: Record<string, Note>;
-    let upcoming = [];
+    let tasks: Record<string, Task> | undefined = $state();
+    let notes: Record<string, Note> | undefined = $state();
+    let upcoming: any[] = [];
     let loading = $state(true);
-    let task_tags: Record<string, number> = {};
+    let task_tags: Record<string, number> = $state({});
     let total_tags = 0;
     async function setup(user: string) {
         tasks = await getTasks(user);
@@ -299,36 +323,36 @@
                         <label class="weekday-label">{day}</label>
                     {/each}
                     {#each chunckedDays as week, weekIndex}
-                    <div class="weeks">
-                        {#each week as day}
-                            {#if Math.floor(day / 10) == 0}
-                                {#if weekIndex >= chunckedDays.length - 1}
-                                    <label class="single-digit-day-next-month">{day}</label>
-                                {:else}
-                                    {#if day == curDay}
-                                        <label class="curday-single-digit"><span class="circular-background">{day}</span></label>
+                        <div class="weeks">
+                            {#each week as day}
+                                {#if Math.floor(day / 10) == 0}
+                                    {#if weekIndex >= chunckedDays.length - 1}
+                                        <label class="single-digit-day-next-month">{day}</label>
                                     {:else}
-                                        <label class="single-digit-day">{day}</label>
-                                    {/if}
-                                {/if}
-                            {:else}
-                                {#if weekIndex <= 1}
-                                    {#if day > 20}
-                                        <label class="previous-month-days">{day}</label>
-                                    {:else if day == curDay}
-                                        <label class="curday"><span class="circular-background">{day}</span></label>
-                                    {:else}
-                                        <label class="weekday-number">{day}</label>
+                                        {#if day == curDay}
+                                            <label class="curday-single-digit"><span class="circular-background">{day}</span></label>
+                                        {:else}
+                                            <label class="single-digit-day">{day}</label>
+                                        {/if}
                                     {/if}
                                 {:else}
-                                    {#if day == curDay}
-                                        <label class="curday">{day}</label>
+                                    {#if weekIndex <= 1}
+                                        {#if day > 20}
+                                            <label class="previous-month-days">{day}</label>
+                                        {:else if day == curDay}
+                                            <label class="curday"><span class="circular-background">{day}</span></label>
+                                        {:else}
+                                            <label class="weekday-number">{day}</label>
+                                        {/if}
                                     {:else}
-                                        <label class="weekday-number">{day}</label>
+                                        {#if day == curDay}
+                                            <label class="curday">{day}</label>
+                                        {:else}
+                                            <label class="weekday-number">{day}</label>
+                                        {/if}
                                     {/if}
                                 {/if}
-                            {/if}
-                        {/each}
+                            {/each}
                         <!-- <br> -->
                         </div>
                     {/each}
@@ -344,8 +368,19 @@
                     {#each Object.entries(notes) as [title, note]}
                         <h4>{title}:</h4>
                         <p>{note}</p>
-                        <button on:click={() => delete_note(title)}>Resolve</button>
+                        <button onclick={() => delete_note(title)}>Resolve</button>
                     {/each}
+                    <button onclick={(() => (show_note_modal = true))}>Add Note</button>
+                    <Modal bind:show_note_modal>
+                        {#snippet header()}
+                            <h2>Add Note</h2>
+                        {/snippet}
+                        <h4>Note Title</h4>
+                        <input bind:value={note_title_text_input}/>
+                        <h4>Note Contents</h4>
+                        <input bind:value={note_description_text_input}/>
+                        <button onclick={() => add_note(note_title_text_input, note_description_text_input)}>Submit</button>
+                    </Modal>
                 </div>
             </div>
 
@@ -354,9 +389,9 @@
                 <div class="calendar-header">
                     <h2 class = "month-year">{monthString}, {year}</h2>
                     <div class="date-buttons">
-                        <button class="indv-date-buttons" class:curr_tab={calendar_view === 1} on:click={() => calendar_view = 1}>Month</button>
-                        <button class="indv-date-buttons" class:curr_tab={calendar_view === 2} on:click={() => calendar_view = 2}>Week</button>
-                        <button class="indv-date-buttons" class:curr_tab={calendar_view === 3} on:click={() => calendar_view = 3}>Day</button>
+                        <button class="indv-date-buttons" class:curr_tab={calendar_view === 1} onclick={() => calendar_view = 1}>Month</button>
+                        <button class="indv-date-buttons" class:curr_tab={calendar_view === 2} onclick={() => calendar_view = 2}>Week</button>
+                        <button class="indv-date-buttons" class:curr_tab={calendar_view === 3} onclick={() => calendar_view = 3}>Day</button>
                     </div>
                 </div>
                 <div class="main-calendar">
@@ -435,9 +470,21 @@
                     <!-- </div> -->
                 
                     {:else if calendar_view == 2}
-                        {#each Array(7) as _, index (index)}
-                            <div class="week-calendar-box" style="--col_index: {index + 1}">
-                                <p>{index}</p>
+                        <div class="timestamps">
+                            {#each times as time, _}
+                                <p>{time}</p>
+                            {/each}
+                        </div>
+                        {#each weekDates as week, index}
+                            <div class="week-calendar-box" style="--col_index: {index + 2}">
+                                <p class="main-calendar-days">{week.split('/')[1]}</p>
+                                {#each Object.entries(tasks) as [title, details]}
+                                        {#if Number(details.task_date.split('/')[0]) == Number(week.split('/')[0]) && Number(details.task_date.split('/')[1]) == Number(week.split('/')[1]) && Number(details.task_date.split('/')[2]) == Number(week.split('/')[2])}
+                                            <div class="day-box" style="--row_start: {details.task_start_time}; --row_end: {details.task_end_time}">
+                                                <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white">{title}</p>
+                                            </div>
+                                        {/if}
+                                {/each}
                             </div>
                         {/each}
                     {:else}
