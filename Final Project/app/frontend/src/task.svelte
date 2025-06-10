@@ -27,7 +27,7 @@
     let taskLabel ="";
 
     let priorityOptions = ['low', 'medium', 'high'];
-    let selectedPriority = 'medium'; 
+    let selectedPriority = ''; 
 
     let feedback = "";
 
@@ -65,7 +65,13 @@
             taskDescription = "";
             taskDate = "";
             allTags.forEach((t) => (t.checked = false));
-            selectedPriority = 'medium';
+            selectedTags = [];
+            selectedPriority = '';
+            taskStartTime = "";
+            taskEndTime = "";
+            taskLocation = "";
+            taskColor = "";
+            taskLabel = "";
         } else {
             feedback = "Unexpected response: " + JSON.stringify(data);
         }
@@ -76,6 +82,16 @@
 </script>
 
 <style>
+    .close {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        text-decoration: none;
+    }
+    .closeButton {
+        all: unset; 
+        cursor: pointer;
+    }
     .background {
         position: fixed;
         top: 50%;
@@ -121,6 +137,7 @@
         border: none;
         border-radius: 8px;
         box-sizing: border-box;
+        color: white;
     }
 
     .tagContainer {
@@ -137,14 +154,16 @@
     }
 
     .buttonContainer {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
+        position: absolute;
+        width: 20%;
+        bottom: 16px;
+        right: 16px;
+        padding: 16px;
         margin-top: 16px;
     }
     .submitButton {
         display: block;
-        width: 20%;
+        width: 100%;
         padding: 16px;
         background-color: #687D31CC;
         border: none;
@@ -158,15 +177,72 @@
         flex-direction: row;
         width: 50%;
     }
-    #timeStart, #timeEnd {
+    #date {
+        /* height: 50%; */
         width: 50%;
         margin-right: 8px;
+        background-color: white;
+        border: 2px solid #687D31CC;
+        border-radius: 8px;
+        box-sizing: border-box;
+        color: black;
+    }
+    #timeStart, #timeEnd {
+        width: 50%;
+        /* height: 50%; */
+        margin-right: 8px;
         margin-left: 8px;
+        background-color: white;
+        border: 2px solid #687D31CC;
+        border-radius: 8px;
+        box-sizing: border-box;
+        color: black;
+    }
+
+    .locationContainer input {
+        display: flex;
+        flex-direction: row;
+        width: 50%;
+        margin-top: 16px;
+    }
+    #location {
+        padding: 16px;
+        background-color: white;
+        border: 2px solid #687D31CC;
+        border-radius: 8px;
+        box-sizing: border-box;
+        color: black;
+    }
+    #location::placeholder {
+        color: black;
     }
 </style>
 
 <main>
+    
     <div class="background">
+        <div class="close">
+            <button
+                class="closeButton"
+                type="button"
+                on:click={() => {
+                    console.log('Close button clicked');
+                    taskName = "";
+                    taskDescription = "";
+                    taskDate = "";
+                    allTags.forEach((t) => (t.checked = false));
+                    selectedTags = [];
+                    selectedPriority = '';
+                    taskStartTime = "";
+                    taskEndTime = "";
+                    taskLocation = "";
+                    taskColor = "";
+                    taskLabel = "";
+                }}
+            >
+                X
+            </button>
+        </div>
         <input
             class="inputBox"
             type="text"
@@ -253,6 +329,7 @@
         <div class="timeContainer">
             <input
                 class="inputBox"
+                id = "date"
                 type="date"
                 placeholder="enter due date here"
                 bind:value={taskDate}
@@ -276,13 +353,22 @@
                 required
             />
         </div>
+        <div class="locationContainer">
+            <input
+                class="inputBox"
+                id="location"
+                type="text"
+                placeholder="enter location here"
+                bind:value={taskLocation}
+            />
+
+        </div>
         <div class="buttonContainer">
             <button
                 class="submitButton"
                 type="button"
                 on:click={() => {
                     console.log('Task submitted with tags:', selectedTags);
-                    // Here you would typically handle the form submission
                     createTask();
                 }}
                 disabled={!taskName}
