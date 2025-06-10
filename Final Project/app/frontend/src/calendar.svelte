@@ -487,7 +487,7 @@
                         <input bind:value={task_tags_text_input}/>
                         <h4>Task Priority</h4>
                         <input bind:value={task_priority_text_input}/>
-                        <button onclick={() => add_task(task_title_text_input, task_description_text_input, task_location_text_input, task_color_text_input, task_label_text_input, task_start_time_text_input, task_end_time_text_input, task_date_text_input, task_tags_text_input, task_priority_text_input)}>Add Task</button>
+                        <button onclick={() => add_task(task_title_text_input, task_description_text_input, task_location_text_input, task_color_text_input, task_label_text_input, task_start_time_text_input, task_end_time_text_input, task_date_text_input, task_tags_text_input, task_priority_text_input)}>Submit</button>
                     </Add_Task_Modal>
                 </div>
                 <div class="main-calendar">
