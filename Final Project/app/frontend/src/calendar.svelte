@@ -1,7 +1,10 @@
 <script lang="ts">
     import './calendar.css';
-    import Modal from './Modal.svelte';
+    import Notes_Modal from './Notes_Modal.svelte';
+    import Tasks_Modal from './Tasks_Modal.svelte';
     let show_note_modal = $state(false);
+    let openTaskTitle: string | null = $state(null);
+    let show_tasks_modal = $state(false);
   
     let properties = $props();
     let user = properties.user;
@@ -371,7 +374,7 @@
                     {/each}
                     <br>
                     <button onclick={(() => (show_note_modal = true))}>Add Note</button>
-                    <Modal bind:show_note_modal>
+                    <Notes_Modal bind:show_note_modal>
                         {#snippet header()}
                             <h2>Add Note</h2>
                         {/snippet}
@@ -380,7 +383,7 @@
                         <h4>Note Contents</h4>
                         <input bind:value={note_description_text_input} size="50"/>
                         <button onclick={() => {add_note(note_title_text_input, note_description_text_input); show_note_modal = false}}>Submit</button>
-                    </Modal>
+                    </Notes_Modal>
                 </div>
             </div>
 
@@ -421,7 +424,7 @@
                                             <p class="main-calendar-previous-or-next-month-days">{mainCalendarDays[row][col]}</p>
                                             {#each Object.entries(tasks) as [title, details]}
                                                 {#if Number(details.task_date.split('/')[0]) == month && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
-                                                    <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white">{title}</p>
+                                                    <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white" onclick={() => {openTaskTitle = title; show_tasks_modal = true;}}>{title}</p>
                                                 {/if}
                                             {/each}
                                         </div>
@@ -430,7 +433,7 @@
                                             <p class="main-calendar-days">{mainCalendarDays[row][col]}</p>
                                             {#each Object.entries(tasks) as [title, details]}
                                                 {#if Number(details.task_date.split('/')[0]) == month + 1 && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
-                                                    <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white">{title}</p>
+                                                    <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white" onclick={() => {openTaskTitle = title; show_tasks_modal = true;}}>{title}</p>
                                                 {/if}
                                             {/each}
                                         </div>
@@ -441,7 +444,7 @@
                                                 <p class="main-calendar-previous-or-next-month-days">{mainCalendarDays[row][col]}</p>
                                                 {#each Object.entries(tasks) as [title, details]}
                                                     {#if Number(details.task_date.split('/')[0]) == month + 2 && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
-                                                        <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white">{title}</p>
+                                                        <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white" onclick={() => {openTaskTitle = title; show_tasks_modal = true;}}>{title}</p>
                                                     {/if}
                                                 {/each}
                                             </div>
@@ -450,7 +453,7 @@
                                                 <p class="main-calendar-days">{mainCalendarDays[row][col]}</p>
                                                 {#each Object.entries(tasks) as [title, details]}
                                                     {#if Number(details.task_date.split('/')[0]) == month + 1 && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
-                                                        <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white">{title}</p>
+                                                        <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white" onclick={() => {openTaskTitle = title; show_tasks_modal = true;}}>{title}</p> 
                                                     {/if}
                                                 {/each}
                                             </div>
@@ -460,7 +463,7 @@
                                         <p class="main-calendar-days">{mainCalendarDays[row][col]}</p>
                                         {#each Object.entries(tasks) as [title, details]}
                                             {#if Number(details.task_date.split('/')[0]) == month + 1 && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
-                                                <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white">{title}</p>
+                                                <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white" onclick={() => {openTaskTitle = title; show_tasks_modal = true;}}>{title}</p>
                                             {/if}
                                         {/each}
                                     </div>          
@@ -502,5 +505,21 @@
                 </div>
             </div>
         </div>
+        {#if show_tasks_modal && openTaskTitle}
+            {#key openTaskTitle}    
+                <Tasks_Modal bind:show_tasks_modal bind:openTaskTitle>
+                        {#snippet header()}
+                            <h2>{openTaskTitle}</h2>
+                        {/snippet}
+                        {@const details = tasks[openTaskTitle]}
+                        <p>Label: {details.task_label}</p>
+                        <p>Priority: {details.task_priority}</p>
+                        <p>{details.task_date}: {details.task_start_time}-{details.task_end_time}</p>
+                        <p>Notes: {details.task_description}</p>
+                        <p>Location: {details.task_location}</p>
+                        <p>Tags: {details.task_tags}</p>
+                </Tasks_Modal>
+            {/key}
+        {/if}
     </main>
 {/if}
