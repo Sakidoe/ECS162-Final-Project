@@ -1,8 +1,10 @@
 <script lang="ts">
     import './calendar.css';
+  
+    let properties = $props();
+    let user = properties.user;
+    let profile_picture = properties.profile_picture;
 
-    export let user;
-    export let profile_picture;
     let today = new Date();
     let curDay = today.getDate();
     let month = today.getMonth();
@@ -11,7 +13,11 @@
     let Months = ["Janurary", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     let monthString = Months[month];
 
-    let firstDay = new Date(year, month, 1);
+    let current_viewing_day = $state(curDay);
+    let current_viewing_month = $state(month);
+    let current_viewing_year = $state(year);
+
+    let firstDay = new Date(current_viewing_year, current_viewing_month, 1);
     let firstWeekday = firstDay.getDay();
     let weekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
     let weekdays_spelled_out = ['SUN', 'MON', 'TUES', 'WEDS', 'THURS', 'FRI', 'SAT'];
@@ -120,12 +126,12 @@
         notes = {...notes};
     }
 
-    let calendar_view = 1;
+    let calendar_view = $state(1);
 
     let tasks: Record<string, Task>;
     let notes: Record<string, Note>;
     let upcoming = [];
-    let loading = true;
+    let loading = $state(true);
     let task_tags: Record<string, number> = {};
     let total_tags = 0;
     async function setup(user: string) {
@@ -149,6 +155,111 @@
         loading = false;
     }
     
+    
+    today = new Date();
+    let day = today.getDay();
+    let weekDates = [];
+    for (let i = 0; i < 7; i++) {
+        let date = new Date(today);
+        date.setDate(today.getDate() - day + i);
+        let formatted = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+        weekDates.push(formatted);
+    }
+
+    let times = ['12:00', '1:00', '2:00', '3:00', '4:00', '5:00', '6:00', '7:00', '8:00', '9:00', '10:00', '11:00', '12:00', '1:00', '2:00', '3:00', '4:00', '5:00', '6:00', '7:00', '8:00', '9:00', '10:00', '11:00', '12:00']
+
+    
+
+    function backArrow() {
+        if (calendar_view == 1) {
+            if (current_viewing_month == 0) {
+                current_viewing_month = 11;
+                current_viewing_year--;
+            } else {
+                current_viewing_month--;
+            }
+        } else if (calendar_view == 2) {
+            if (current_viewing_day <= 8) {
+                let overflow = current_viewing_day - 7;
+                if (current_viewing_month == 4 || current_viewing_month == 6 || current_viewing_month == 7 || current_viewing_month == 9 || current_viewing_month == 11) {
+                    current_viewing_month--;
+                    current_viewing_day = 30 + overflow;
+                } else if (current_viewing_month == 2) {
+                    current_viewing_month--;
+                    current_viewing_day = 28 + overflow;
+                } else if (current_viewing_month == 0) {
+                    current_viewing_month = 11;
+                    current_viewing_year--;
+                    current_viewing_day = 31 + overflow;
+                } else {
+                    current_viewing_month--;
+                    current_viewing_day = 31 + overflow;
+                }
+            } else {
+                current_viewing_day -= 7;
+            }
+        } else {
+            if (current_viewing_day == 1) {
+                if (current_viewing_month == 4 || current_viewing_month == 6 || current_viewing_month == 7 || current_viewing_month == 9 || current_viewing_month == 11) {
+                    current_viewing_month--;
+                    current_viewing_day = 30;
+                } else if (current_viewing_month == 2) {
+                    current_viewing_month--;
+                    current_viewing_day = 28;
+                } else if (current_viewing_month == 0) {
+                    current_viewing_month = 11;
+                    current_viewing_year--;
+                    current_viewing_day = 31;
+                } else {
+                    current_viewing_month--;
+                    current_viewing_day = 31;
+                }
+            } else {
+                current_viewing_day--;
+            }
+        }
+    }
+
+    function forwardArrow() {
+        if (calendar_view == 1) {
+            if (current_viewing_month == 11) {
+                current_viewing_month = 0;
+                current_viewing_year++;
+            } else {
+                current_viewing_month++;
+            }
+        } else if (calendar_view == 2) {
+            
+        } else {
+            if (current_viewing_month == 1 && current_viewing_day == 28) {
+                current_viewing_day = 1;
+                current_viewing_month++;
+            } else if (current_viewing_month == 0 || current_viewing_month == 4 || current_viewing_month == 6 || current_viewing_month == 7 || current_viewing_month == 9) {
+                if (current_viewing_day == 31) {
+                    current_viewing_day = 1;
+                    current_viewing_month++;
+                } else {
+                    current_viewing_day++;
+                }
+            } else if (current_viewing_month == 11) {
+                if (current_viewing_day == 31) {
+                    current_viewing_day = 1;
+                    current_viewing_month = 0;
+                    current_viewing_year++;
+                } else {
+                    current_viewing_day++;
+                }
+            } else {
+                if (current_viewing_day == 30) {
+                    current_viewing_day = 1;
+                    current_viewing_month++;
+                } else {
+                    current_viewing_day++;
+                }
+            }
+        }
+    }
+
     setup(user);
 </script>
 
@@ -164,7 +275,7 @@
         <div class="calendar">
             <div class="side-bar">
                 <div class="name">
-                    <img class="profile-picture" src={profile_picture}/>
+                    <img class="profile-picture" src={profile_picture} alt="profile picture from google account"/>
                     <h3 class="user-name">{user}</h3>
                 </div>
                 <div class="upcoming-events">
@@ -243,6 +354,9 @@
                     <button on:click={() => calendar_view = 1}>Month</button>
                     <button on:click={() => calendar_view = 2}>Week</button>
                     <button on:click={() => calendar_view = 3}>Day</button>
+                    <button on:click={backArrow}>&lt;</button>
+                    <label>Today</label>
+                    <button on:click={forwardArrow}>&gt;</button>
                 </div>
                 {#if calendar_view == 1 || calendar_view == 2}
                     {#each Array(7) as _, index (index)}
@@ -313,9 +427,23 @@
                         {/each}
                     {/each}
                 {:else if calendar_view == 2}
-                    {#each Array(7) as _, index (index)}
-                        <div class="week-calendar-box" style="--col_index: {index + 1}">
-                            <p>{index}</p>
+                    <div class="timestamps">
+                        {#each times as time, _}
+                            <p>{time}</p>
+                        {/each}
+                    </div>
+                    {#each weekDates as week, index}
+                        <div class="week-calendar-box" style="--col_index: {index + 2}">
+                            <label>{week.split('/')[1]}</label>
+                            {#each Object.entries(tasks) as [title, details]}
+                                    {#if Number(details.task_date.split('/')[0]) == Number(week.split('/')[0]) && Number(details.task_date.split('/')[1]) == Number(week.split('/')[1]) && Number(details.task_date.split('/')[2]) == Number(week.split('/')[2])}
+                                        <div class="day-box" style="--row_start: {details.task_start_time}; --row_end: {details.task_end_time}">
+                                            {console.log(details.task_start_time)}
+                                            {console.log(details.task_end_time)}
+                                            <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white">{title}</p>
+                                        </div>
+                                    {/if}
+                            {/each}
                         </div>
                     {/each}
                 {:else}
