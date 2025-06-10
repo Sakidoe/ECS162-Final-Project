@@ -36,16 +36,16 @@ export default app
       //   method: "POST",
       //   body: JSON.stringify({
       //     user_id: 'David Roth',
-      //     task_name: 'my sixth task',
-      //     task_description: "this is my sixth task",
+      //     task_name: 'my seventh task',
+      //     task_description: "this is my seventh task",
       //     task_location: "home",
-      //     task_color: "aqua",
-      //     task_label: "work",
+      //     task_color: "blue",
+      //     task_label: "home",
       //     task_start_time: "12:00",
       //     task_end_time: "13:00",
-      //     task_date: "6/10/2025",
-      //     task_tags: ["work"],
-      //     task_priority: "high"
+      //     task_date: "6/12/2025",
+      //     task_tags: ["home"],
+      //     task_priority: "low"
       //   }),
       //   headers: {'Content-Type': 'application/json'}
       // });

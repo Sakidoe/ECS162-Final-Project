@@ -2,9 +2,11 @@
     import './calendar.css';
     import Notes_Modal from './Notes_Modal.svelte';
     import Tasks_Modal from './Tasks_Modal.svelte';
+    import Add_Task_Modal from './Add_Task_Modal.svelte';
     let show_note_modal = $state(false);
     let openTaskTitle: string | null = $state(null);
     let show_tasks_modal = $state(false);
+    let add_tasks_modal = $state(false);
   
     let properties = $props();
     let user = properties.user;
@@ -81,7 +83,7 @@
         task_start_time: string;
         task_end_time: string;
         task_date: string;
-        task_tags: [];
+        task_tags: string[];
         task_priority: string;
     };
 
@@ -149,8 +151,72 @@
         note_title_text_input = '';
     }
 
+    function add_task(task_title: string, task_description: string, task_location: string, task_color: string, task_label: string, task_start_time: string, task_end_time: string, task_date: string, task_tags: string, task_priority: string) {
+        fetch("http://localhost:8000/create_task", {
+            method: "POST",
+            body: JSON.stringify({
+                user_id: user,
+                task_name: task_title,
+                task_description: task_description,
+                task_location: task_location,
+                task_color: task_color,
+                task_label: task_label,
+                task_start_time: task_start_time,
+                task_end_time: task_end_time,
+                task_date: task_date,
+                task_tags: [task_tags],
+                task_priority: task_priority
+            }),
+            headers: {'Content-Type': 'application/json'}
+        });
+        let task_tags_array = [];
+        task_tags_array.push(task_tags);
+        tasks[task_title] = {
+            task_description: task_description,
+            task_location: task_location,
+            task_color: task_color,
+            task_label: task_label,
+            task_start_time: task_start_time,
+            task_end_time: task_end_time,
+            task_date: task_date,
+            task_tags: task_tags_array,
+            task_priority: task_priority
+        }
+        tasks = {...tasks};
+        for (let i = 0; i < task_tags_array.length; i++) {
+            if (task_tags_array[i] in all_task_tags) {
+                all_task_tags[task_tags_array[i]] += 1;
+            } else {
+                all_task_tags[task_tags_array[i]] = 1;
+            }
+        }
+        all_task_tags = {... all_task_tags}
+        task_title_text_input  = '';
+        task_description_text_input = '';
+        task_location_text_input = '';
+        task_color_text_input = '';
+        task_label_text_input = '';
+        task_start_time_text_input = '';
+        task_end_time_text_input = '';
+        task_date_text_input = '';
+        task_tags_text_input = '';
+        task_priority_text_input = '';
+    }
+
     let note_title_text_input = $state('');
     let note_description_text_input = $state('');
+
+    let task_title_text_input = $state('');
+    let task_description_text_input = $state('');
+    let task_location_text_input = $state('');
+    let task_color_text_input = $state('');
+    let task_label_text_input = $state('');
+    let task_start_time_text_input = $state('');
+    let task_end_time_text_input = $state('');
+    let task_date_text_input = $state('');
+    let task_priority_text_input = $state('');
+    let task_tags_text_input = $state('');
+
 
     let calendar_view = $state(1);
 
@@ -158,7 +224,7 @@
     let notes: Record<string, Note> | undefined = $state();
     let upcoming: any[] = [];
     let loading = $state(true);
-    let task_tags: Record<string, number> = $state({});
+    let all_task_tags: Record<string, number> = $state({});
     let total_tags = 0;
     async function setup(user: string) {
         tasks = await getTasks(user);
@@ -170,10 +236,10 @@
             }
             let tags = details.task_tags;
             for (let i = 0; i < tags.length; i++) {
-                if (tags[i] in task_tags) {
-                    task_tags[tags[i]] += 1;
+                if (tags[i] in all_task_tags) {
+                    all_task_tags[tags[i]] += 1;
                 } else {
-                    task_tags[tags[i]] = 1;
+                    all_task_tags[tags[i]] = 1;
                 }
                 total_tags += 1;
             }
@@ -361,7 +427,7 @@
                     </div>
                 <div class="breakdown">
                     <h3 class="time-breakdown-inside">Time Breakdown</h3>
-                    {#each Object.entries(task_tags) as [tag, num]}
+                    {#each Object.entries(all_task_tags) as [tag, num]}
                         <p>{tag}: {num}</p>
                     {/each}
                 </div>
@@ -396,6 +462,33 @@
                         <button class="indv-date-buttons" class:curr_tab={calendar_view === 2} onclick={() => calendar_view = 2}>Week</button>
                         <button class="indv-date-buttons" class:curr_tab={calendar_view === 3} onclick={() => calendar_view = 3}>Day</button>
                     </div>
+                    <button onclick={(() => (add_tasks_modal = true))}>Add Task</button>
+                    <Add_Task_Modal bind:add_tasks_modal>
+                        {#snippet header()}
+                            <h2>Add a Task</h2>
+                        {/snippet}
+                        <h4>Task Title</h4>
+                        <input bind:value={task_title_text_input}/>
+                        <h4>Task Description</h4>
+                        <input bind:value={task_description_text_input}/>
+                        <h4>Task Location</h4>
+                        <input bind:value={task_location_text_input}/>
+                        <h4>Task Color</h4>
+                        <input bind:value={task_color_text_input}/>
+                        <h4>Task Label</h4>
+                        <input bind:value={task_label_text_input}/>
+                        <h4>Task Start Time</h4>
+                        <input bind:value={task_start_time_text_input}/>
+                        <h4>Task End Time</h4>
+                        <input bind:value={task_end_time_text_input}/>
+                        <h4>Task Date</h4>
+                        <input bind:value={task_date_text_input}/>
+                        <h4>Task Tags</h4>
+                        <input bind:value={task_tags_text_input}/>
+                        <h4>Task Priority</h4>
+                        <input bind:value={task_priority_text_input}/>
+                        <button onclick={() => add_task(task_title_text_input, task_description_text_input, task_location_text_input, task_color_text_input, task_label_text_input, task_start_time_text_input, task_end_time_text_input, task_date_text_input, task_tags_text_input, task_priority_text_input)}>Add Task</button>
+                    </Add_Task_Modal>
                 </div>
                 <div class="main-calendar">
                     <!-- <div class = "week-headings-only"> -->
@@ -494,7 +587,7 @@
                         <div class="day-calendar-box">
                             {#each Object.entries(tasks) as [title, details]}
                                 {#if Number(details.task_date.split('/')[0]) == month + 1 && Number(details.task_date.split('/')[1]) == curDay && Number(details.task_date.split('/')[2]) == year}
-                                    <p class="calendar-task-day-page" style="--background_color: {details.task_color}; --text_color: white">{title}</p>
+                                    <p class="calendar-task-day-page" style="--background_color: {details.task_color}; --text_color: white" onclick={() => {openTaskTitle = title; show_tasks_modal = true;}}>{title}</p>
                                 {/if}
                             {/each}
                         </div>
