@@ -144,7 +144,6 @@
         notes = {...notes};
         note_description_text_input = '';
         note_title_text_input = '';
-        show_note_modal = false;
     }
 
     let note_title_text_input = $state('');
@@ -367,19 +366,20 @@
                     <h3>Notes</h3>
                     {#each Object.entries(notes) as [title, note]}
                         <h4>{title}:</h4>
-                        <p>{note}</p>
+                        <p>{note.note_description || note}</p>
                         <button onclick={() => delete_note(title)}>Resolve</button>
                     {/each}
+                    <br>
                     <button onclick={(() => (show_note_modal = true))}>Add Note</button>
                     <Modal bind:show_note_modal>
                         {#snippet header()}
                             <h2>Add Note</h2>
                         {/snippet}
                         <h4>Note Title</h4>
-                        <input bind:value={note_title_text_input}/>
+                        <input bind:value={note_title_text_input} size="50"/>
                         <h4>Note Contents</h4>
-                        <input bind:value={note_description_text_input}/>
-                        <button onclick={() => add_note(note_title_text_input, note_description_text_input)}>Submit</button>
+                        <input bind:value={note_description_text_input} size="50"/>
+                        <button onclick={() => {add_note(note_title_text_input, note_description_text_input); show_note_modal = false}}>Submit</button>
                     </Modal>
                 </div>
             </div>
