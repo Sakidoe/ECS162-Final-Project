@@ -7,6 +7,7 @@
     let openTaskTitle: string | null = $state(null);
     let show_tasks_modal = $state(false);
     let add_tasks_modal = $state(false);
+    let add_task_date: string | null = $state(null);
   
     let properties = $props();
     let user = properties.user;
@@ -462,33 +463,6 @@
                         <button class="indv-date-buttons" class:curr_tab={calendar_view === 2} onclick={() => calendar_view = 2}>Week</button>
                         <button class="indv-date-buttons" class:curr_tab={calendar_view === 3} onclick={() => calendar_view = 3}>Day</button>
                     </div>
-                    <button onclick={(() => (add_tasks_modal = true))}>Add Task</button>
-                    <Add_Task_Modal bind:add_tasks_modal>
-                        {#snippet header()}
-                            <h2>Add a Task</h2>
-                        {/snippet}
-                        <h4>Task Title</h4>
-                        <input bind:value={task_title_text_input}/>
-                        <h4>Task Description</h4>
-                        <input bind:value={task_description_text_input}/>
-                        <h4>Task Location</h4>
-                        <input bind:value={task_location_text_input}/>
-                        <h4>Task Color</h4>
-                        <input bind:value={task_color_text_input}/>
-                        <h4>Task Label</h4>
-                        <input bind:value={task_label_text_input}/>
-                        <h4>Task Start Time</h4>
-                        <input bind:value={task_start_time_text_input}/>
-                        <h4>Task End Time</h4>
-                        <input bind:value={task_end_time_text_input}/>
-                        <h4>Task Date</h4>
-                        <input bind:value={task_date_text_input}/>
-                        <h4>Task Tags</h4>
-                        <input bind:value={task_tags_text_input}/>
-                        <h4>Task Priority</h4>
-                        <input bind:value={task_priority_text_input}/>
-                        <button onclick={() => add_task(task_title_text_input, task_description_text_input, task_location_text_input, task_color_text_input, task_label_text_input, task_start_time_text_input, task_end_time_text_input, task_date_text_input, task_tags_text_input, task_priority_text_input)}>Submit</button>
-                    </Add_Task_Modal>
                 </div>
                 <div class="main-calendar">
                     <!-- <div class = "week-headings-only"> -->
@@ -522,7 +496,7 @@
                             {#each Array(7) as _, col (col)}
                                 {#if row == 0}
                                     {#if mainCalendarDays[row][col] > 8}
-                                        <div class="calendar-box" style="--row_index: {row + 1}; --col_index: {col + 1}">
+                                        <div class="calendar-box" style="--row_index: {row + 1}; --col_index: {col + 1}" onclick={(() => {add_task_date = String(month) + '/' + mainCalendarDays[row][col] + '/' + String(year); add_tasks_modal = true})}>
                                             <p class="main-calendar-previous-or-next-month-days">{mainCalendarDays[row][col]}</p>
                                             {#each Object.entries(tasks) as [title, details]}
                                                 {#if Number(details.task_date.split('/')[0]) == month && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
@@ -531,7 +505,7 @@
                                             {/each}
                                         </div>
                                     {:else}
-                                        <div class="calendar-box" style="--row_index: {row + 1}; --col_index: {col + 1}">
+                                        <div class="calendar-box" style="--row_index: {row + 1}; --col_index: {col + 1}" onclick={(() => {add_task_date = String(month + 1) + '/' + mainCalendarDays[row][col] + '/' + String(year); add_tasks_modal = true})}>
                                             <p class="main-calendar-days">{mainCalendarDays[row][col]}</p>
                                             {#each Object.entries(tasks) as [title, details]}
                                                 {#if Number(details.task_date.split('/')[0]) == month + 1 && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
@@ -542,7 +516,7 @@
                                     {/if}
                                 {:else if row >= 4}
                                         {#if mainCalendarDays[row][col] < 15}
-                                            <div class="calendar-box" style="--row_index: {row + 1}; --col_index: {col + 1}">
+                                            <div class="calendar-box" style="--row_index: {row + 1}; --col_index: {col + 1}" onclick={(() => {add_task_date = String(month + 2) + '/' + mainCalendarDays[row][col] + '/' + String(year); add_tasks_modal = true})}>
                                                 <p class="main-calendar-previous-or-next-month-days">{mainCalendarDays[row][col]}</p>
                                                 {#each Object.entries(tasks) as [title, details]}
                                                     {#if Number(details.task_date.split('/')[0]) == month + 2 && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
@@ -551,7 +525,7 @@
                                                 {/each}
                                             </div>
                                         {:else}
-                                            <div class="calendar-box" style="--row_index: {row + 1}; --col_index: {col + 1}">
+                                            <div class="calendar-box" style="--row_index: {row + 1}; --col_index: {col + 1}" onclick={(() => {add_task_date = String(month + 1) + '/' + mainCalendarDays[row][col] + '/' + String(year); add_tasks_modal = true})}>
                                                 <p class="main-calendar-days">{mainCalendarDays[row][col]}</p>
                                                 {#each Object.entries(tasks) as [title, details]}
                                                     {#if Number(details.task_date.split('/')[0]) == month + 1 && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
@@ -561,7 +535,7 @@
                                             </div>
                                         {/if}
                                 {:else}
-                                    <div class="calendar-box" style="--row_index: {row + 1}; --col_index: {col + 1}">
+                                    <div class="calendar-box" style="--row_index: {row + 1}; --col_index: {col + 1}" onclick={(() => {add_task_date = String(month + 1) + '/' + mainCalendarDays[row][col] + '/' + String(year); add_tasks_modal = true})}>
                                         <p class="main-calendar-days">{mainCalendarDays[row][col]}</p>
                                         {#each Object.entries(tasks) as [title, details]}
                                             {#if Number(details.task_date.split('/')[0]) == month + 1 && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
@@ -608,6 +582,36 @@
                         <p>Location: {details.task_location}</p>
                         <p>Tags: {details.task_tags}</p>
                 </Tasks_Modal>
+            {/key}
+        {/if}
+        {#if add_tasks_modal && add_task_date}
+            {#key add_task_date}
+                <Add_Task_Modal bind:add_tasks_modal bind:add_task_date>
+                    {#snippet header()}
+                        <h2>Add a Task</h2>
+                    {/snippet}
+                    <h4>Task Title</h4>
+                    <input bind:value={task_title_text_input}/>
+                    <h4>Task Description</h4>
+                    <input bind:value={task_description_text_input}/>
+                    <h4>Task Location</h4>
+                    <input bind:value={task_location_text_input}/>
+                    <h4>Task Color</h4>
+                    <input bind:value={task_color_text_input}/>
+                    <h4>Task Label</h4>
+                    <input bind:value={task_label_text_input}/>
+                    <h4>Task Start Time</h4>
+                    <input bind:value={task_start_time_text_input}/>
+                    <h4>Task End Time</h4>
+                    <input bind:value={task_end_time_text_input}/>
+                    <h4>Task Date</h4>
+                    <input bind:value={add_task_date}/>
+                    <h4>Task Tags</h4>
+                    <input bind:value={task_tags_text_input}/>
+                    <h4>Task Priority</h4>
+                    <input bind:value={task_priority_text_input}/>
+                    <button onclick={() => add_task(task_title_text_input, task_description_text_input, task_location_text_input, task_color_text_input, task_label_text_input, task_start_time_text_input, task_end_time_text_input, add_task_date, task_tags_text_input, task_priority_text_input)}>Submit</button>
+                </Add_Task_Modal>
             {/key}
         {/if}
     </main>
