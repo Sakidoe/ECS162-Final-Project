@@ -580,16 +580,15 @@
                                 <p></p>
                             </div>
                         {/each}
-                    {:else}
-                        <div class="week-headings" style="--row_index: {2}; --col_index: {1}">
-                            <h3>{weekdays_spelled_out[weekday]} {curDay}</h3>
-                        </div>
-                        <div class="day-calendar-box">
-                            {#each Object.entries(tasks) as [title, details]}
-                                {#if Number(details.task_date.split('/')[0]) == month + 1 && Number(details.task_date.split('/')[1]) == curDay && Number(details.task_date.split('/')[2]) == year}
-                                    <p class="calendar-task-day-page" style="--background_color: {details.task_color}; --text_color: white" onclick={() => {openTaskTitle = title; show_tasks_modal = true;}}>{title}</p>
-                                {/if}
-                            {/each}
+                    {:else if calendar_view == 3}
+                        <div class="day-headings-only">
+                            <h3 class="day-box">
+                                <!-- {#each Object.entries(tasks) as [title, details]}
+                                    {#if Number(details.task_date.split('/')[0]) == current_viewing_month + 1 && Number(details.task_date.split('/')[1]) == current_viewing_day && Number(details.task_date.split('/')[2]) == current_viewing_year}
+                                        <p class="calendar-task-day-page" style="--background_color: {details.task_color}; --text_color: white" onclick={() => {openTaskTitle = title; show_tasks_modal = true;}}>{title}</p>
+                                    {/if}
+                                {/each} -->
+                            </h3>
                         </div>
                     {/if}
                 </div>

@@ -300,8 +300,8 @@
     .day-calendar-box {
         grid-column-start: 1;
         grid-column-end: 8;
-        grid-row-start: 3;
-        grid-row-end: 8;
+        grid-row-start: 1;
+        grid-row-end: 6;
         border: 2px solid black;
     }
 
