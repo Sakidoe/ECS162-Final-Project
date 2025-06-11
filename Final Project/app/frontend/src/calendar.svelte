@@ -426,20 +426,21 @@
                     {/each}
                     <br>
                     <button class="note-button" onclick={(() => (show_note_modal = true))}>Add Note</button>
-                    <Notes_Modal bind:show_note_modal>
-                        {#snippet header()}
-                            <h2>Add Note</h2>
-                        {/snippet}
-                        <div class="note-container">   
-                            <input class="note-title" placeholder="Note Title" bind:value={note_title_text_input} />
-                            <input class="note-contents" placeholder="Note Contents" bind:value={note_description_text_input} />
-                            <!-- <button onclick={() => {add_note(note_title_text_input, note_description_text_input); show_note_modal = false}}>Submit</button> -->
-                        </div>
-                        <button class="note-submit-btn" onclick={() => {add_note(note_title_text_input, note_description_text_input); show_note_modal = false}}>Submit</button>
-                        <button class="close-button" onclick={() => show_note_modal = false}>Close</button>
-                        
-                    </Notes_Modal>
-
+                    {#if show_note_modal}
+                        <Notes_Modal bind:show_note_modal>
+                            {#snippet header()}
+                                <h2>Add Note</h2>
+                            {/snippet}
+                            <div class="note-container">   
+                                <input class="note-title" placeholder="Note Title" bind:value={note_title_text_input} />
+                                <input class="note-contents" placeholder="Note Contents" bind:value={note_description_text_input} />
+                                <!-- <button onclick={() => {add_note(note_title_text_input, note_description_text_input); show_note_modal = false}}>Submit</button> -->
+                            </div>
+                            <button class="note-submit-btn" onclick={() => {add_note(note_title_text_input, note_description_text_input); show_note_modal = false}}>Submit</button>
+                            <button class="close-button" onclick={() => show_note_modal = false}>Close</button>
+                            
+                        </Notes_Modal>
+                    {/if}
                 </div>
             </div>
 
