@@ -1,6 +1,4 @@
 <script lang="ts">
-  import Task from "./task.svelte";
-
   let sidebarOpen = false;
 
   let tasks = [];
@@ -9,7 +7,7 @@
   let newTaskTag = "";
   let newTaskPriority = "medium";
   let showCreateForm = false;
-  const userId = "jon"; //hardcoded
+  const userId = "david";
 
   async function fetchTasks() {
     const res = await fetch(`http://localhost:8000/get_tasks/${userId}`, {
@@ -28,55 +26,32 @@
     }
   }
 
-  async function deleteTask(title) {
-    try {
-      const res = await fetch('http://localhost:8000/delete_task', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id:    userId,
-          task_title: title
-        })
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-      const data = await res.json();
-      if (data.success) {
-        // Remove it locally
-        tasks = tasks.filter(t => t.task_name !== title);
-      } else {
-        console.warn('Unexpected delete response:', data);
-      }
-    } catch (err) {
-      console.error('Failed to delete task:', err);
-    }
+  async function createTask() {
+    if (!newTaskTitle || !newTaskTag) return alert("Fill out all fields.");
+    await fetch("http://localhost:8000/create_task", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id: userId,
+        task_name: newTaskTitle,
+        task_description: "n/a",
+        task_location: "n/a",
+        task_color: "gray",
+        task_label: "n/a",
+        task_start_time: "00:00",
+        task_end_time: "01:00",
+        task_date: "unknown",
+        task_tags: newTaskTag,
+        task_priority: newTaskPriority,
+        status: "task"
+      }),
+    });
+    newTaskTitle = "";
+    newTaskTag = "";
+    newTaskPriority = "medium";
+    showCreateForm = false;
+    fetchTasks();
   }
-  // async function createTask() {
-  //   if (!newTaskTitle || !newTaskTag) return alert("Fill out all fields.");
-  //   await fetch("http://localhost:8000/create_task", {
-  //     method: "POST",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify({
-  //       user_id: userId,
-  //       task_name: newTaskTitle,
-  //       task_description: "n/a",
-  //       task_location: "n/a",
-  //       task_color: "gray",
-  //       task_label: "n/a",
-  //       task_start_time: "00:00",
-  //       task_end_time: "01:00",
-  //       task_date: "unknown",
-  //       task_tags: newTaskTag,
-  //       task_priority: newTaskPriority,
-  //       status: "task"
-  //     }),
-  //   });
-  //   newTaskTitle = "";
-  //   newTaskTag = "";
-  //   newTaskPriority = "medium";
-  //   showCreateForm = false;
-  //   fetchTasks();
-  // }
 
   async function updateStatus(taskId: number, newStatus: string) {
     const task = tasks.find(t => t.id === taskId);
@@ -115,24 +90,16 @@
   <div class:shifted={sidebarOpen} class="main-content">
     <header class="header">
       <div class="logo" on:click={() => sidebarOpen = true}></div>
-      <p class="title-header">Dashboard</p>
+      <p class="title-header">ToDo – Week 9</p>
     </header>
+
+    <div class="search-bar"></div>
 
     <section class="board">
       <div class="column">
         <h2>task</h2>
         {#each tasks as task, index}
           <div class="task-card">
-            <div class="close">
-                <button 
-                on:click={() => { 
-                  deleteTask(task.title).then(() => fetchTasks()); 
-                }} 
-                class="closeTask"
-              >
-                X
-              </button>
-            </div>
             <div class="task-header">
               <span>{task.title}</span>
               <span class="task-date">{task.date}</span>
@@ -154,21 +121,22 @@
           </div>
         {/each}
 
-        <!-- <div class="task-card empty"></div> -->
+        <div class="task-card empty"></div>
         <div class="create-task">
-          <button on:click={() => { showCreateForm = true }}>+</button>
-          <p>Create a new task</p>
+          {#if showCreateForm}
+            <input placeholder="Title" bind:value={newTaskTitle} />
+            <input placeholder="Tag" bind:value={newTaskTag} />
+            <select bind:value={newTaskPriority}>
+              <option value="high">high</option>
+              <option value="medium">medium</option>
+              <option value="low">low</option>
+            </select>
+            <button on:click={createTask}>✔</button>
+            <button on:click={() => showCreateForm = false}>✕</button>
+          {:else}
+            <button on:click={() => showCreateForm = true}>＋</button> create a new task
+          {/if}
         </div>
-        
-        {#if showCreateForm}
-          <Task
-            on:close={() => showCreateForm = false}
-            on:taskCreated={() => {
-              showCreateForm = false; // Close the form
-              fetchTasks(); // Refresh the tasks
-            }}
-          />
-        {/if}
 
       </div>
 
@@ -186,28 +154,20 @@
     </section>
   </div>
 </main>
-
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
-
-  html, body {
-    margin: 0;
-    padding: 0;
-    border: none;
-    background-color: #dbe1d7;
-    height: 100%;
-    width: 100%;
-    overflow-x: hidden;
-  }
 
   * {
     font-family: 'Playfair Display', serif;
     box-sizing: border-box;
   }
 
+  body {
+    background-color: #dbe1d7; /* light sage gray */
+  }
+
   .layout {
     display: flex;
-    border: none;
   }
 
   .sidebar {
@@ -216,7 +176,7 @@
     left: -320px;
     width: 320px;
     height: 100vh;
-    background-color: #4a572a;
+    background-color: #4a572a; /* olive green */
     padding: 1rem;
     display: flex;
     flex-direction: column;
@@ -238,7 +198,7 @@
   }
 
   .nav-btn {
-    background-color: #6f7d4c;
+    background-color: #6f7d4c; /* muted olive */
     border: none;
     padding: 0.75rem;
     border-radius: 6px;
@@ -292,13 +252,18 @@
   }
 
   .title-header {
-    text-align: center;
-    width: 100%;
     font-size: 30px;
     background-color: white;
     padding: 0.5rem 2rem;
     border: 1px solid #556b2f;
     border-radius: 5px;
+  }
+
+  .search-bar {
+    height: 40px;
+    background-color: #e2e8d5;
+    border-radius: 6px;
+    margin-bottom: 1rem;
   }
 
   .board {
@@ -315,13 +280,10 @@
 
   .column h2 {
     text-align: center;
+    background-color: #5b6d2f;
+    color: white;
     padding: 0.5rem;
     border-radius: 6px;
-    color: white;
-  }
-
-  .column:nth-child(1) h2 {
-    background-color: #5b6d2f;
   }
 
   .column:nth-child(2) h2 {
@@ -333,8 +295,7 @@
   }
 
   .task-card {
-    position: relative;
-    background-color: #5b6d2f;
+    background-color: #5b6d2f; /* dark olive */
     color: white;
     padding: 1rem;
     border-radius: 6px;
@@ -361,21 +322,10 @@
     color: white;
   }
 
-  /* Default empty style fallback */
   .task-card.empty {
     height: 100px;
-    border-radius: 10px;
+    background-color: #aab78a;
   }
-
-  /* Specific column background styles */
-  .column:nth-child(2) .task-card.empty {
-    background-color: #84a89d; /* same as in-progress header */
-  }
-
-  .column:nth-child(3) .task-card.empty {
-    background-color: #9bbfe8; /* same as completed header */
-  }
-
 
   .create-task {
     display: flex;
@@ -419,8 +369,8 @@
   }
 
   .styled-checkbox:checked {
-    background-color: white;
-    border-color: white;
+    background-color: #ffffff;
+    border-color: #ffffff;
   }
 
   .styled-checkbox:checked::after {
@@ -434,33 +384,20 @@
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
   }
-
-  .close {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    cursor: pointer;
-  }
-
-  .closeTask {
-    background: none;
-    border: none;
-    font-size: 1rem;
-    font-weight: bold;
-    color: #f9f9f9;
-    cursor: pointer;
-  }
   html, body {
-  margin: 0;
-  padding: 0;
-  background-color: #dbe1d7; /* muted green-gray */
-  height: 100%;
-  width: 100%;
-  overflow-x: hidden;
-}
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background-color: #dbe1d7 !important;
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+  }
 
-:global(body) {
-  background-color: #dbe1d7;
-}
+  main.layout {
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
 
 </style>
