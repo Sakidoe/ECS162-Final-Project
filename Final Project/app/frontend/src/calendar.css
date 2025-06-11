@@ -509,3 +509,9 @@
     .submit-button{
         margin-right: 35px;
     }
+
+    .week-add-task-box {
+        grid-row-start: 1;
+        grid-row-end: 48;
+        grid-column: var(--col);
+    }

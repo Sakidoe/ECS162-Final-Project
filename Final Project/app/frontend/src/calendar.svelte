@@ -669,9 +669,11 @@
                                     <p>{time}</p>
                                 </div>
                             {/each}
+                            
 
                             <!-- Task Blocks -->
                             {#each weekDates as weekAndDate, index}
+                                <div class="week-add-task-box" style="--col: {index + 2}" onclick={() => {add_task_date = String(month) + '/' + weekAndDate.split('/')[1] + '/' + String(year); add_tasks_modal = true}}></div>
                                 {#each getPositionedTasks(tasks, weekAndDate) as task}
                                     <div
                                         class="calendar-task-week-page"
@@ -691,6 +693,7 @@
                                         <p>{task.title}</p>
                                     </div>
                                 {/each}
+                                
                             {/each}
                         </div>
                         <!-- {/each} -->
@@ -704,7 +707,7 @@
                                 {/each}
                             </h3>
                         </div> -->
-                        <div class="day-calendar-grid">
+                        <div class="day-calendar-grid" onclick={() => {add_task_date = String(month) + '/' + current_viewing_day + '/' + String(year); add_tasks_modal = true}}>
                             <!-- Weekday Heading -->
                             <div class="day-header">{weekdays_spelled_out[weekday]} {current_viewing_day}</div>
 
