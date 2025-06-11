@@ -683,7 +683,7 @@
         </div>
         {#if show_tasks_modal && openTaskTitle}
             {#key openTaskTitle}    
-                <Tasks_Modal bind:show_tasks_modal bind:openTaskTitle>
+                <Tasks_Modal bind:show_tasks_modal bind:openTaskTitle bind:add_tasks_modal>
                         {#snippet header()}
                             <h2>{openTaskTitle}</h2>
                         {/snippet}

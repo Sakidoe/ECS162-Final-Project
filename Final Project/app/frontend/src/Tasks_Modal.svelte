@@ -1,5 +1,5 @@
 <script>
-	let { show_tasks_modal = $bindable(), openTaskTitle = $bindable(), header, children } = $props();
+	let { show_tasks_modal = $bindable(), openTaskTitle = $bindable(), add_tasks_modal = $bindable(), header, children } = $props();
 
 
 	let dialog = $state(); // HTMLDialogElement
@@ -12,7 +12,7 @@
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
 <dialog
 	bind:this={dialog}
-	onclose={() => {show_tasks_modal = false; openTaskTitle = null;}}
+	onclose={() => {show_tasks_modal = false; openTaskTitle = null; add_tasks_modal = false;}}
 	onclick={(e) => { if (e.target === dialog) dialog.close(); }}
 >
 	<div>
