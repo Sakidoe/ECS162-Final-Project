@@ -39,12 +39,10 @@
         margin: 10px;
         background-color: white;
         max-height: 230px;
-        /* padding: 0 0px; */
     }
 
     .breakdown {
         grid-row: 4;
-        /* border: 2px solid black; */
         border: none;
         background-color: white;
         border-radius: 15px;
@@ -57,14 +55,19 @@
 
     .notes {
         grid-row: 5;
-        /* border: 2px solid black;
-        border-bottom-left-radius: 15px;
-        border-bottom-right-radius: 15px;      */
         border: none;
         background-color: white;
         border-radius: 15px;
-        margin: 15px;
+        margin: 10px;
         padding: 0 15px ;
+    }
+
+    .note-button{
+        width: 275px;
+        border-radius: 5px;
+        height: 30px;
+        border: 1px solid rgba(104, 125, 49, 1);
+        background-color: rgba(104, 125, 49, .5);
     }
 
     .weekday-label {
@@ -115,7 +118,6 @@
         width: 10%;
         height: auto;
         border-radius: 50%;
-        /* padding: 10px 0 0 10px; */
     }
 
     .user-name {
@@ -145,7 +147,7 @@
         flex-direction: column;
         gap: 10px;
         flex: 1;
-        height: 100%;
+        height: 85%;
     }
 
     .month-year{
@@ -261,11 +263,13 @@
     }
 
     .calendar-dates{
-        aspect-ratio: 1/1;
+        /* aspect-ratio: 1/1; */
+        height: 700px;
         display: grid;
         grid-template-columns: repeat(7, 1fr);
         grid-template-rows: repeat(5, 1fr);
         overflow: hidden;
+        max-height: 100%;
     }
 
     .weekdays{
@@ -350,7 +354,7 @@
     .time-label {
         text-align: right;
         padding-right: 10px;
-        font-size: 0.9rem;
+        font-size: 14px;
     }
 
     .calendar-cell{
@@ -538,4 +542,42 @@
         grid-row-start: 1;
         grid-row-end: 48;
         grid-column: var(--col);
+    }
+
+    .note-title,
+    .note-contents{
+        width: 470px;
+        height: 30px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        border: 1px solid rgba(104, 125, 49, 1);
+        
+    }
+
+    .note-submit-btn{
+        padding: 5px;
+        width: 100px;
+        border-radius: 5px;
+        border: 1px solid rgba(104, 125, 49, 1);
+        margin: 10px;
+        background-color: rgba(104, 125, 49, .5);
+    }
+
+    .close-button{
+        margin: 10px;
+        padding: 5px;
+        width: 100px;
+        border-radius: 5px;
+        border: 1px solid rgba(104, 125, 49, 1);
+        background-color: rgba(104, 125, 49, .5);
+    }
+
+    .resolve-note-btn{
+        border-radius: 5px;
+        border: 1px solid rgba(104, 125, 49, 1);
+        margin: 5px 0 15px 210px;
+    }
+
+    .resolve-div{
+        border-bottom: 1px solid rgba(104, 125, 49, 1);
     }

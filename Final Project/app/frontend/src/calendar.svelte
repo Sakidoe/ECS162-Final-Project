@@ -422,20 +422,24 @@
                     {#each Object.entries(notes) as [title, note]}
                         <h4>{title}:</h4>
                         <p>{note.note_description || note}</p>
-                        <button onclick={() => delete_note(title)}>Resolve</button>
+                        <div class="resolve-div"><button class="resolve-note-btn" onclick={() => delete_note(title)}>Resolve</button></div>
                     {/each}
                     <br>
-                    <button onclick={(() => (show_note_modal = true))}>Add Note</button>
+                    <button class="note-button" onclick={(() => (show_note_modal = true))}>Add Note</button>
                     <Notes_Modal bind:show_note_modal>
                         {#snippet header()}
                             <h2>Add Note</h2>
                         {/snippet}
-                        <h4>Note Title</h4>
-                        <input bind:value={note_title_text_input} size="50"/>
-                        <h4>Note Contents</h4>
-                        <input bind:value={note_description_text_input} size="50"/>
-                        <button onclick={() => {add_note(note_title_text_input, note_description_text_input); show_note_modal = false}}>Submit</button>
+                        <div class="note-container">   
+                            <input class="note-title" placeholder="Note Title" bind:value={note_title_text_input} />
+                            <input class="note-contents" placeholder="Note Contents" bind:value={note_description_text_input} />
+                            <!-- <button onclick={() => {add_note(note_title_text_input, note_description_text_input); show_note_modal = false}}>Submit</button> -->
+                        </div>
+                        <button class="note-submit-btn" onclick={() => {add_note(note_title_text_input, note_description_text_input); show_note_modal = false}}>Submit</button>
+                        <button class="close-button" onclick={() => show_note_modal = false}>Close</button>
+                        
                     </Notes_Modal>
+
                 </div>
             </div>
 
@@ -481,7 +485,7 @@
                     
                     {#if calendar_view == 1}
                         <div class="calendar-dates">
-                            {#each Array(6) as _, row (row)}
+                            {#each Array(5) as _, row (row)}
                                 {#each Array(7) as _, col (col)}
                                     {#if row == 0}
                                         {#if mainCalendarDays[row][col] > 8}
