@@ -297,7 +297,7 @@
     font-size: 30px;
     background-color: white;
     padding: 0.5rem 2rem;
-    border: 1px solid #556b2f;
+    border: 0.5px solid #556b2f;
     border-radius: 5px;
   }
 
