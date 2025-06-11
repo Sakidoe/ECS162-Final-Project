@@ -131,4 +131,13 @@ export default app
     //   }),
     //   headers: {'Content-Type': 'application/json'}
     // });
+
+    // const teams = await fetch("http://localhost:8000/delete_task", {
+    //   method: "POST",
+    //   body: JSON.stringify({
+    //     user_id: 'David Roth',
+    //     task_title: 'testing something'
+    //   }),
+    //   headers: {'Content-Type': 'application/json'}
+    // });
 })();

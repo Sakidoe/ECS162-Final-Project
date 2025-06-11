@@ -199,8 +199,27 @@
                 }),
                 headers: {'Content-Type': 'application/json'}
             });
+            
             delete tasks[task_title];
             tasks = {...tasks};
+            all_task_tags = Object.assign({});
+            for (const [taskname, details] of Object.entries(tasks)) {
+                let date = details.task_date.split('/');
+                if (Number(date[1]) <= curDay + 3 && Number(date[1]) >= curDay) {
+                    upcoming.push(taskname);
+                }
+                let tags = details.task_tags;
+                for (let i = 0; i < tags.length; i++) {
+                    if (tags[i] in all_task_tags) {
+                        all_task_tags[tags[i]] += 1;
+                    } else {
+                        all_task_tags[tags[i]] = 1;
+                    }
+                    total_tags += 1;
+                }
+            }
+            all_task_tags = {...all_task_tags};
+            upcoming = {...upcoming};
             show_tasks_modal = false; 
             openTaskTitle = null;
             add_tasks_modal = false;
@@ -273,8 +292,7 @@
             task_label_text_input = '';
             task_start_time_text_input = '';
             task_end_time_text_input = '';
-            task_date_text_input = '';
-            task_tags_text_input = '';
+            task_tags_text_input = [''];
             task_priority_text_input = '';
             show_tasks_modal = false; 
             openTaskTitle = null;
@@ -294,10 +312,8 @@
     let task_label_text_input = $state('');
     let task_start_time_text_input = $state('');
     let task_end_time_text_input = $state('');
-    let task_date_text_input = $state('');
     let task_priority_text_input = $state('');
     let task_tags_text_input = $state(['']);
-    let multiple_tasks = 0;
 
 
     let calendar_view = $state(1);
@@ -328,20 +344,7 @@
         }
         loading = false;
     }
-
-    function getTasksForWeek(weekAndDate: string) {
-		const matchingTasks = [];
-
-		for (const [title, details] of Object.entries(tasks)) {
-			const [m, d, y] = details.task_date.split('/').map(Number);
-			if (m === month + 1 && d === Number(weekAndDate.split('/')[1]) && y === year) {
-				matchingTasks.push({ title, details });
-			}
-		}
-		return matchingTasks;
-	}
-    
-    
+        
     today = new Date();
     let day = today.getDay();
     let weekDates = [];
@@ -353,100 +356,6 @@
     }
 
     let times = ['12:00', '1:00', '2:00', '3:00', '4:00', '5:00', '6:00', '7:00', '8:00', '9:00', '10:00', '11:00', '12:00', '1:00', '2:00', '3:00', '4:00', '5:00', '6:00', '7:00', '8:00', '9:00', '10:00', '11:00']
-
-    
-
-    function backArrow() {
-        if (calendar_view == 1) {
-            if (current_viewing_month == 0) {
-                current_viewing_month = 11;
-                current_viewing_year--;
-            } else {
-                current_viewing_month--;
-            }
-        } else if (calendar_view == 2) {
-            if (current_viewing_day <= 8) {
-                let overflow = current_viewing_day - 7;
-                if (current_viewing_month == 4 || current_viewing_month == 6 || current_viewing_month == 7 || current_viewing_month == 9 || current_viewing_month == 11) {
-                    current_viewing_month--;
-                    current_viewing_day = 30 + overflow;
-                } else if (current_viewing_month == 2) {
-                    current_viewing_month--;
-                    current_viewing_day = 28 + overflow;
-                } else if (current_viewing_month == 0) {
-                    current_viewing_month = 11;
-                    current_viewing_year--;
-                    current_viewing_day = 31 + overflow;
-                } else {
-                    current_viewing_month--;
-                    current_viewing_day = 31 + overflow;
-                }
-            } else {
-                current_viewing_day -= 7;
-            }
-        } else {
-            if (current_viewing_day == 1) {
-                if (current_viewing_month == 4 || current_viewing_month == 6 || current_viewing_month == 7 || current_viewing_month == 9 || current_viewing_month == 11) {
-                    current_viewing_month--;
-                    current_viewing_day = 30;
-                } else if (current_viewing_month == 2) {
-                    current_viewing_month--;
-                    current_viewing_day = 28;
-                } else if (current_viewing_month == 0) {
-                    current_viewing_month = 11;
-                    current_viewing_year--;
-                    current_viewing_day = 31;
-                } else {
-                    current_viewing_month--;
-                    current_viewing_day = 31;
-                }
-            } else {
-                current_viewing_day--;
-            }
-        }
-    }
-
-    function forwardArrow() {
-        if (calendar_view == 1) {
-            if (current_viewing_month == 11) {
-                current_viewing_month = 0;
-                current_viewing_year++;
-            } else {
-                current_viewing_month++;
-            }
-        } else if (calendar_view == 2) {
-            
-        } else {
-            if (current_viewing_month == 1 && current_viewing_day == 28) {
-                current_viewing_day = 1;
-                current_viewing_month++;
-            } else if (current_viewing_month == 0 || current_viewing_month == 4 || current_viewing_month == 6 || current_viewing_month == 7 || current_viewing_month == 9) {
-                if (current_viewing_day == 31) {
-                    current_viewing_day = 1;
-                    current_viewing_month++;
-                } else {
-                    current_viewing_day++;
-                }
-            } else if (current_viewing_month == 11) {
-                if (current_viewing_day == 31) {
-                    current_viewing_day = 1;
-                    current_viewing_month = 0;
-                    current_viewing_year++;
-                } else {
-                    current_viewing_day++;
-                }
-            } else {
-                if (current_viewing_day == 30) {
-                    current_viewing_day = 1;
-                    current_viewing_month++;
-                } else {
-                    current_viewing_day++;
-                }
-            }
-        }
-    }
-
-    
 
     setup(user);
 </script>
@@ -532,20 +441,25 @@
                     {#each Object.entries(notes) as [title, note]}
                         <h4>{title}:</h4>
                         <p>{note.note_description || note}</p>
-                        <button onclick={() => delete_note(title)}>Resolve</button>
+                        <div class="resolve-div"><button class="resolve-note-btn" onclick={() => delete_note(title)}>Resolve</button></div>
                     {/each}
                     <br>
-                    <button onclick={(() => (show_note_modal = true))}>Add Note</button>
-                    <Notes_Modal bind:show_note_modal>
-                        {#snippet header()}
-                            <h2>Add Note</h2>
-                        {/snippet}
-                        <h4>Note Title</h4>
-                        <input bind:value={note_title_text_input} size="50"/>
-                        <h4>Note Contents</h4>
-                        <input bind:value={note_description_text_input} size="50"/>
-                        <button onclick={() => {add_note(note_title_text_input, note_description_text_input); show_note_modal = false}}>Submit</button>
-                    </Notes_Modal>
+                    <button class="note-button" onclick={(() => (show_note_modal = true))}>Add Note</button>
+                    {#if show_note_modal}
+                        <Notes_Modal bind:show_note_modal>
+                            {#snippet header()}
+                                <h2>Add Note</h2>
+                            {/snippet}
+                            <div class="note-container">   
+                                <input class="note-title" placeholder="Note Title" bind:value={note_title_text_input} />
+                                <input class="note-contents" placeholder="Note Contents" bind:value={note_description_text_input} />
+                                <!-- <button onclick={() => {add_note(note_title_text_input, note_description_text_input); show_note_modal = false}}>Submit</button> -->
+                            </div>
+                            <button class="note-submit-btn" onclick={() => {add_note(note_title_text_input, note_description_text_input); show_note_modal = false}}>Submit</button>
+                            <button class="close-button" onclick={() => show_note_modal = false}>Close</button>
+                            
+                        </Notes_Modal>
+                    {/if}
                 </div>
             </div>
 
@@ -565,7 +479,7 @@
                     <div class = "week-headings-only">
                         {#each Array(7) as _, index (index)}
                             {#if weekday == index}
-                                <div class="week-headings" style="--color: green">
+                                <div class="week-headings" style="--background_color: rgba(104, 125, 49, .8)">
                                     <h3 class = "weekdays">{weekdays_spelled_out[index]}</h3>
                                 </div>
                             {:else}
@@ -575,23 +489,10 @@
                             {/if}
                         {/each}
                     </div>
-                    {/if}
-                    <!-- {#if calendar_view == 2}
-                        <div class = "week-headings-only">
-                            {#each weekDates as weekAndDate, index}
-                                <div class="week-calendar-box" style="--col_index: {index + 1}">
-                                    <h3 class="weekdays">
-                                        {weekdays_spelled_out[index]} {weekAndDate.split('/')[1]}
-                                    </h3>
-                                </div>
-                            {/each}
-                        </div>
-                    {/if} -->
-
-                    
+                    {/if}                    
                     {#if calendar_view == 1}
                         <div class="calendar-dates">
-                            {#each Array(6) as _, row (row)}
+                            {#each Array(5) as _, row (row)}
                                 {#each Array(7) as _, col (col)}
                                     {#if row == 0}
                                         {#if mainCalendarDays[row][col] > 8}
@@ -655,13 +556,13 @@
                                         grid-row: 1;
                                         grid-column: {index + 2};
                                     ">
-                                    <h3>{weekAndDate.split('/')[1]} {weekdays_spelled_out[index]}</h3>
+                                    <h3 class="week-header">{weekAndDate.split('/')[1]} {weekdays_spelled_out[index]}</h3>
                                 </div>
                             {/each}
 
                             <!-- Time Labels (1st column) -->
                             {#each times as time, index}
-                                <div class="calendar-cell time-label"
+                                <div class="calendar-cell time-label day-times"
                                     style="
                                         grid-row: {index + 2};
                                         grid-column: 1;
@@ -669,9 +570,11 @@
                                     <p>{time}</p>
                                 </div>
                             {/each}
+                            
 
                             <!-- Task Blocks -->
                             {#each weekDates as weekAndDate, index}
+                                <div class="week-add-task-box" style="--col: {index + 2}" onclick={() => {add_task_date = String(month + 1) + '/' + weekAndDate.split('/')[1] + '/' + String(year); add_tasks_modal = true}}></div>
                                 {#each getPositionedTasks(tasks, weekAndDate) as task}
                                     <div
                                         class="calendar-task-week-page"
@@ -691,6 +594,7 @@
                                         <p>{task.title}</p>
                                     </div>
                                 {/each}
+                                
                             {/each}
                         </div>
                         <!-- {/each} -->
@@ -704,16 +608,14 @@
                                 {/each}
                             </h3>
                         </div> -->
-                        <div class="day-calendar-grid">
+                        <div class="day-calendar-grid" onclick={() => {add_task_date = String(month + 1) + '/' + current_viewing_day + '/' + String(year); add_tasks_modal = true}}>
                             <!-- Weekday Heading -->
-                            <div class="day-header">{weekdays_spelled_out[weekday]} {current_viewing_day}</div>
+                            <div class="day-header">{current_viewing_day} {weekdays_spelled_out[weekday]}</div>
 
-                            <!-- Time Labels -->
                             {#each times as time, index}
-                                <div class="time-label" style="grid-row: {index + 2};">{time}</div>
+                                <div class="calendar-cell time-label day-times" style="grid-row: {index + 2};">{time}</div>
                             {/each}
 
-                            <!-- Tasks -->
                             {#each getPositionedTasks(tasks, weekDates[weekday]) as task}
                                 <div
                                 class="calendar-task-day-page"
@@ -781,12 +683,16 @@
                             <input class="color-picker" placeholder="Enter Color" bind:value={details.task_color}/>
                         </span>
                         <!-- <h4>Task Color</h4> -->
-        
-                        <h4>Task Priority</h4>
-                        <input bind:value={details.task_priority}/>
-                        <button onclick={() => add_task(openTaskTitle, details.task_description, details.task_location, details.task_color, details.task_label, details.task_start_time, details.task_end_time, details.task_date, details.task_tags, details.task_priority)}>Submit</button>
-                        <button onclick={() => {show_tasks_modal = false; openTaskTitle = null; add_tasks_modal = false;}}>Close</button>
-                        <button onclick={() => delete_task(openTaskTitle)}>Delete</button>
+                        <div class="priority-container">
+                            <img src="/priority.svg" alt="Priority Icon" class ="priority-icon"/>
+                            <h4 class="priority-name">Task Priority</h4>
+                            <input class="prioirty-input" placeholder="Enter Priority" bind:value={details.task_priority}/>
+                        </div>
+                        <!-- <h4 class=>Task Priority</h4>
+                        <input bind:value={details.task_priority}/> -->
+                        <button class="submit-button" onclick={() => add_task(openTaskTitle, details.task_description, details.task_location, details.task_color, details.task_label, details.task_start_time, details.task_end_time, details.task_date, details.task_tags, details.task_priority)}>Submit</button>
+                        <button class="close-button" onclick={() => {show_tasks_modal = false; openTaskTitle = null; add_tasks_modal = false;}}>Close</button>
+                        <button class="delete-button" onclick={() => delete_task(openTaskTitle)}>Delete</button>
                     </div>
                 </Tasks_Modal>
             {/key}
