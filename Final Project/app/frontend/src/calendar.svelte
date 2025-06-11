@@ -199,8 +199,27 @@
                 }),
                 headers: {'Content-Type': 'application/json'}
             });
+            
             delete tasks[task_title];
             tasks = {...tasks};
+            all_task_tags = Object.assign({});
+            for (const [taskname, details] of Object.entries(tasks)) {
+                let date = details.task_date.split('/');
+                if (Number(date[1]) <= curDay + 3 && Number(date[1]) >= curDay) {
+                    upcoming.push(taskname);
+                }
+                let tags = details.task_tags;
+                for (let i = 0; i < tags.length; i++) {
+                    if (tags[i] in all_task_tags) {
+                        all_task_tags[tags[i]] += 1;
+                    } else {
+                        all_task_tags[tags[i]] = 1;
+                    }
+                    total_tags += 1;
+                }
+            }
+            all_task_tags = {...all_task_tags};
+            upcoming = {...upcoming};
             show_tasks_modal = false; 
             openTaskTitle = null;
             add_tasks_modal = false;
