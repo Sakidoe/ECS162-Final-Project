@@ -1,7 +1,9 @@
 <script lang="ts">
    // Teams data
   let teams: Record<string, any> = {};
-  let currentUser: { id?: string, email?: string } = {};
+  export let user;
+  export let full_user;
+  let currentUser: { id?: string, email?: string } = {id: user};
   let isLoading: boolean = false;
   let teamError: string | null = null;
   let createTeamError: string | null = null;
@@ -187,7 +189,7 @@
     <div class="teams-dashboard">
       <header class="teams-header">
         <h1>Team Dashboard</h1>
-        <button on:click={logout} class="logout-button">Logout</button>
+        <button on:click={full_user = null} class="logout-button">Logout</button>
       </header>
 
       <div class="teams-content">

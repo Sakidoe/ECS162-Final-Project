@@ -112,7 +112,7 @@ def auth():
     nonce = session.get('nonce')
     user_info = google.parse_id_token(token, nonce=nonce)
     session['user'] = user_info
-    return redirect('http://localhost:5173')
+    return redirect('http://localhost:5173/')
 
 @app.route('/logout')
 def logout():
@@ -220,41 +220,12 @@ def create_team_task():
     task_assignees = request_dictionary['task_assignees']
     task_priority = request_dictionary['task_priority']
     task_due_date = request_dictionary['task_due_date']
-
     user = find_user(user_id)
     if len(user) == 0:
-        # Create a new user with the team and initial task
-        db.notes.insert_one({
-            "ID": user_id,
-            "tasks": {},
-            "notes": {},
-            "teams": {
-                task_team: {
-                    task_name: {
-                        "task_description": task_description,
-                        "task_assignees": task_assignees,
-                        "task_priority": task_priority,
-                        "task_due_date": task_due_date
-                    }
-                }
-            }
-        })
+        db.notes.insert_one({"ID": user_id, "tasks": {}, "notes": {}, "teams": {}})
+        db.notes.update_one({"ID": user_id}, {"$set": {f"teams.{task_team}": {task_name: {"task_description": task_description, "task_assignees": task_assignees, "task_priority": task_priority, "task_due_date": task_due_date}}}})
     else:
-        # Add new task without overwriting previous ones
-        db.notes.update_one(
-            {"ID": user_id},
-            {
-                "$set": {
-                    f"teams.{task_team}.{task_name}": {
-                        "task_description": task_description,
-                        "task_assignees": task_assignees,
-                        "task_priority": task_priority,
-                        "task_due_date": task_due_date
-                    }
-                }
-            }
-        )
-
+        db.notes.update_one({"ID": user_id}, {"$set": {f"teams.{task_team}": {task_name: {"task_description": task_description, "task_assignees": task_assignees, "task_priority": task_priority, "task_due_date": task_due_date}}}})
     return jsonify({"success": "team task created successfully"})
 
 @app.route("/delete_note", methods=["POST"])

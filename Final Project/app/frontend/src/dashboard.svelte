@@ -11,7 +11,10 @@
   let newTaskTag = "";
   let newTaskPriority = "medium";
   let showCreateForm = false;
-  const userId = "jon"; //hardcoded
+  // const userId = "jon"; //hardcoded
+  export let userId;
+  export let currentScreen;
+  export let full_user;
 
   async function fetchTasks() {
     const res = await fetch(`http://localhost:8000/get_tasks/${userId}`, {
@@ -115,9 +118,9 @@
   <div class:sidebar-open={sidebarOpen} class="sidebar">
     <div class="close-btn" on:click={() => sidebarOpen = false}>X</div>
     <h2>NAME</h2>
-    <button class="nav-btn">dashboard</button>
-    <button class="nav-btn">teams</button>
-    <button class="nav-btn">calendar</button>
+    <button class="nav-btn" on:click={() => currentScreen = 'dashboard'}>dashboard</button>
+    <button class="nav-btn" on:click={() => currentScreen = 'teams'}>teams</button>
+    <button class="nav-btn" on:click={() => currentScreen = 'calendar'}>calendar</button>
     <div class="logout-container">
       <div class="logout-icon"></div>
       <span>logout</span>
