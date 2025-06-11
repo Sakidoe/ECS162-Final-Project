@@ -655,13 +655,13 @@
                                         grid-row: 1;
                                         grid-column: {index + 2};
                                     ">
-                                    <h3>{weekAndDate.split('/')[1]} {weekdays_spelled_out[index]}</h3>
+                                    <h3 class="week-header">{weekAndDate.split('/')[1]} {weekdays_spelled_out[index]}</h3>
                                 </div>
                             {/each}
 
                             <!-- Time Labels (1st column) -->
                             {#each times as time, index}
-                                <div class="calendar-cell time-label"
+                                <div class="calendar-cell time-label day-times"
                                     style="
                                         grid-row: {index + 2};
                                         grid-column: 1;
@@ -698,25 +698,14 @@
                         </div>
                         <!-- {/each} -->
                     {:else if calendar_view == 3}
-                        <!-- <div class="day-headings-only">
-                            <h3 class="day-box">
-                                {#each Object.entries(tasks) as [title, details]}
-                                    {#if Number(details.task_date.split('/')[0]) == current_viewing_month + 1 && Number(details.task_date.split('/')[1]) == current_viewing_day && Number(details.task_date.split('/')[2]) == current_viewing_year}
-                                        <p class="calendar-task-day-page" style="--background_color: {details.task_color}; --text_color: white" onclick={() => {openTaskTitle = title; show_tasks_modal = true;}}>{title}</p>
-                                    {/if}
-                                {/each}
-                            </h3>
-                        </div> -->
-                        <div class="day-calendar-grid" onclick={() => {add_task_date = String(month) + '/' + current_viewing_day + '/' + String(year); add_tasks_modal = true}}>
+                        <div class="day-calendar-grid">
                             <!-- Weekday Heading -->
-                            <div class="day-header">{weekdays_spelled_out[weekday]} {current_viewing_day}</div>
+                            <div class="day-header">{current_viewing_day} {weekdays_spelled_out[weekday]}</div>
 
-                            <!-- Time Labels -->
                             {#each times as time, index}
-                                <div class="time-label" style="grid-row: {index + 2};">{time}</div>
+                                <div class="calendar-cell time-label day-times" style="grid-row: {index + 2};">{time}</div>
                             {/each}
 
-                            <!-- Tasks -->
                             {#each getPositionedTasks(tasks, weekDates[weekday]) as task}
                                 <div
                                 class="calendar-task-day-page"
