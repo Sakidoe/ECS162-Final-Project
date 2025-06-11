@@ -92,6 +92,61 @@
         note_description: string;
     }
 
+    type TaskWithMeta = {
+        title: string;
+        details: Task;
+        start: number;
+        end: number;
+        slot: number;
+        totalSlots: number;
+    };
+
+
+    function parseTime(timeStr: string): number {
+        const [h, m] = timeStr.split(':').map(Number);
+		return h + m / 60;
+    }
+
+    function getPositionedTasks(tasks: Record<string, Task>, weekDate: string): TaskWithMeta[] {
+        const result: TaskWithMeta[] = [];
+
+        // Filter by date
+        let dayTasks = Object.entries(tasks)
+            .filter(([_, t]) => t.task_date === weekDate)
+            .map(([title, details]) => ({
+                title,
+                details,
+                start: parseTime(details.task_start_time),
+                end: parseTime(details.task_end_time),
+                slot: 0,
+                totalSlots: 1
+            }))
+            .sort((a, b) => a.start - b.start);
+
+        // Assign slots for overlapping tasks
+        for (let i = 0; i < dayTasks.length; i++) {
+            let current = dayTasks[i];
+            let overlaps = [current];
+
+            for (let j = i + 1; j < dayTasks.length; j++) {
+                if (dayTasks[j].start < current.end) {
+                    overlaps.push(dayTasks[j]);
+                } else break;
+            }
+
+            // Assign horizontal slots
+            overlaps.forEach((task, idx) => {
+                task.slot = idx;
+                task.totalSlots = overlaps.length;
+            });
+
+            // Skip over grouped overlaps
+            i += overlaps.length - 1;
+            result.push(...overlaps);
+        }
+
+        return result;
+    }
 
     async function getTasks(user: string): Promise<Record<string, Task>> {
         return await fetch("http://localhost:8000/get_tasks/" + user, {
@@ -217,6 +272,7 @@
     let task_date_text_input = $state('');
     let task_priority_text_input = $state('');
     let task_tags_text_input = $state('');
+    let multiple_tasks = 0;
 
 
     let calendar_view = $state(1);
@@ -247,6 +303,18 @@
         }
         loading = false;
     }
+
+    function getTasksForWeek(weekAndDate: string) {
+		const matchingTasks = [];
+
+		for (const [title, details] of Object.entries(tasks)) {
+			const [m, d, y] = details.task_date.split('/').map(Number);
+			if (m === month + 1 && d === Number(weekAndDate.split('/')[1]) && y === year) {
+				matchingTasks.push({ title, details });
+			}
+		}
+		return matchingTasks;
+	}
     
     
     today = new Date();
@@ -259,7 +327,7 @@
         weekDates.push(formatted);
     }
 
-    let times = ['12:00', '1:00', '2:00', '3:00', '4:00', '5:00', '6:00', '7:00', '8:00', '9:00', '10:00', '11:00', '12:00', '1:00', '2:00', '3:00', '4:00', '5:00', '6:00', '7:00', '8:00', '9:00', '10:00', '11:00', '12:00']
+    let times = ['12:00', '1:00', '2:00', '3:00', '4:00', '5:00', '6:00', '7:00', '8:00', '9:00', '10:00', '11:00', '12:00', '1:00', '2:00', '3:00', '4:00', '5:00', '6:00', '7:00', '8:00', '9:00', '10:00', '11:00']
 
     
 
@@ -352,6 +420,8 @@
             }
         }
     }
+
+    
 
     setup(user);
 </script>
@@ -479,7 +549,7 @@
                             {/if}
                         {/each}
                     {/if}
-                    {#if calendar_view == 2}
+                    <!-- {#if calendar_view == 2}
                         <div class = "week-headings-only">
                             {#each weekDates as weekAndDate, index}
                                 <div class="week-calendar-box" style="--col_index: {index + 1}">
@@ -489,38 +559,19 @@
                                 </div>
                             {/each}
                         </div>
-                    {/if}
+                    {/if} -->
 
-                    <div class="calendar-dates">
-                        {#if calendar_view == 1}
-                        {#each Array(6) as _, row (row)}
-                            {#each Array(7) as _, col (col)}
-                                {#if row == 0}
-                                    {#if mainCalendarDays[row][col] > 8}
-                                        <div class="calendar-box" style="--row_index: {row + 1}; --col_index: {col + 1}" onclick={(() => {add_task_date = String(month) + '/' + mainCalendarDays[row][col] + '/' + String(year); add_tasks_modal = true})}>
-                                            <p class="main-calendar-previous-or-next-month-days">{mainCalendarDays[row][col]}</p>
-                                            {#each Object.entries(tasks) as [title, details]}
-                                                {#if Number(details.task_date.split('/')[0]) == month && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
-                                                    <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white" onclick={() => {openTaskTitle = title; show_tasks_modal = true;}}>{title}</p>
-                                                {/if}
-                                            {/each}
-                                        </div>
-                                    {:else}
-                                        <div class="calendar-box" style="--row_index: {row + 1}; --col_index: {col + 1}" onclick={(() => {add_task_date = String(month + 1) + '/' + mainCalendarDays[row][col] + '/' + String(year); add_tasks_modal = true})}>
-                                            <p class="main-calendar-days">{mainCalendarDays[row][col]}</p>
-                                            {#each Object.entries(tasks) as [title, details]}
-                                                {#if Number(details.task_date.split('/')[0]) == month + 1 && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
-                                                    <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white" onclick={() => {openTaskTitle = title; show_tasks_modal = true;}}>{title}</p>
-                                                {/if}
-                                            {/each}
-                                        </div>
-                                    {/if}
-                                {:else if row >= 4}
-                                        {#if mainCalendarDays[row][col] < 15}
-                                            <div class="calendar-box" style="--row_index: {row + 1}; --col_index: {col + 1}" onclick={(() => {add_task_date = String(month + 2) + '/' + mainCalendarDays[row][col] + '/' + String(year); add_tasks_modal = true})}>
+                    
+                    {#if calendar_view == 1}
+                        <div class="calendar-dates">
+                            {#each Array(6) as _, row (row)}
+                                {#each Array(7) as _, col (col)}
+                                    {#if row == 0}
+                                        {#if mainCalendarDays[row][col] > 8}
+                                            <div class="calendar-box" style="--row_index: {row + 1}; --col_index: {col + 1}" onclick={(() => {add_task_date = String(month) + '/' + mainCalendarDays[row][col] + '/' + String(year); add_tasks_modal = true})}>
                                                 <p class="main-calendar-previous-or-next-month-days">{mainCalendarDays[row][col]}</p>
                                                 {#each Object.entries(tasks) as [title, details]}
-                                                    {#if Number(details.task_date.split('/')[0]) == month + 2 && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
+                                                    {#if Number(details.task_date.split('/')[0]) == month && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
                                                         <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white" onclick={() => {openTaskTitle = title; show_tasks_modal = true;}}>{title}</p>
                                                     {/if}
                                                 {/each}
@@ -530,31 +581,92 @@
                                                 <p class="main-calendar-days">{mainCalendarDays[row][col]}</p>
                                                 {#each Object.entries(tasks) as [title, details]}
                                                     {#if Number(details.task_date.split('/')[0]) == month + 1 && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
-                                                        <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white" onclick={() => {openTaskTitle = title; show_tasks_modal = true;}}>{title}</p> 
+                                                        <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white" onclick={() => {openTaskTitle = title; show_tasks_modal = true;}}>{title}</p>
                                                     {/if}
                                                 {/each}
                                             </div>
                                         {/if}
-                                {:else}
-                                    <div class="calendar-box" style="--row_index: {row + 1}; --col_index: {col + 1}" onclick={(() => {add_task_date = String(month + 1) + '/' + mainCalendarDays[row][col] + '/' + String(year); add_tasks_modal = true})}>
-                                        <p class="main-calendar-days">{mainCalendarDays[row][col]}</p>
-                                        {#each Object.entries(tasks) as [title, details]}
-                                            {#if Number(details.task_date.split('/')[0]) == month + 1 && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
-                                                <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white" onclick={() => {openTaskTitle = title; show_tasks_modal = true;}}>{title}</p>
+                                    {:else if row >= 4}
+                                            {#if mainCalendarDays[row][col] < 15}
+                                                <div class="calendar-box" style="--row_index: {row + 1}; --col_index: {col + 1}" onclick={(() => {add_task_date = String(month + 2) + '/' + mainCalendarDays[row][col] + '/' + String(year); add_tasks_modal = true})}>
+                                                    <p class="main-calendar-previous-or-next-month-days">{mainCalendarDays[row][col]}</p>
+                                                    {#each Object.entries(tasks) as [title, details]}
+                                                        {#if Number(details.task_date.split('/')[0]) == month + 2 && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
+                                                            <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white" onclick={() => {openTaskTitle = title; show_tasks_modal = true;}}>{title}</p>
+                                                        {/if}
+                                                    {/each}
+                                                </div>
+                                            {:else}
+                                                <div class="calendar-box" style="--row_index: {row + 1}; --col_index: {col + 1}" onclick={(() => {add_task_date = String(month + 1) + '/' + mainCalendarDays[row][col] + '/' + String(year); add_tasks_modal = true})}>
+                                                    <p class="main-calendar-days">{mainCalendarDays[row][col]}</p>
+                                                    {#each Object.entries(tasks) as [title, details]}
+                                                        {#if Number(details.task_date.split('/')[0]) == month + 1 && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
+                                                            <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white" onclick={() => {openTaskTitle = title; show_tasks_modal = true;}}>{title}</p> 
+                                                        {/if}
+                                                    {/each}
+                                                </div>
                                             {/if}
-                                        {/each}
-                                    </div>          
-                                {/if}
+                                    {:else}
+                                        <div class="calendar-box" style="--row_index: {row + 1}; --col_index: {col + 1}" onclick={(() => {add_task_date = String(month + 1) + '/' + mainCalendarDays[row][col] + '/' + String(year); add_tasks_modal = true})}>
+                                            <p class="main-calendar-days">{mainCalendarDays[row][col]}</p>
+                                            {#each Object.entries(tasks) as [title, details]}
+                                                {#if Number(details.task_date.split('/')[0]) == month + 1 && Number(details.task_date.split('/')[1]) == mainCalendarDays[row][col] && Number(details.task_date.split('/')[2]) == year}
+                                                    <p class="calendar-task-month-page" style="--background_color: {details.task_color}; --text_color: white" onclick={() => {openTaskTitle = title; show_tasks_modal = true;}}>{title}</p>
+                                                {/if}
+                                            {/each}
+                                        </div>          
+                                    {/if}
+                                {/each}
                             {/each}
-                        {/each}
-                    <!-- </div> -->
-                
+                        </div>                
                     {:else if calendar_view == 2}
-                        {#each Array(7) as _, index (index)}
-                            <div class="week-calendar-box" style="--col_index: {index + 1}">
-                                <p></p>
-                            </div>
-                        {/each}
+                        <div class="calendar-grid">
+                            <!-- Weekday Headings -->
+                            {#each weekDates as weekAndDate, index}
+                                <div class="calendar-cell heading"
+                                    style="
+                                        grid-row: 1;
+                                        grid-column: {index + 2};
+                                    ">
+                                    <h3>{weekdays_spelled_out[index]} {weekAndDate.split('/')[1]}</h3>
+                                </div>
+                            {/each}
+
+                            <!-- Time Labels (1st column) -->
+                            {#each times as time, index}
+                                <div class="calendar-cell time-label"
+                                    style="
+                                        grid-row: {index + 2};
+                                        grid-column: 1;
+                                    ">
+                                    <p>{time}</p>
+                                </div>
+                            {/each}
+
+                            <!-- Task Blocks -->
+                            {#each weekDates as weekAndDate, index}
+                                {#each getPositionedTasks(tasks, weekAndDate) as task}
+                                    <div
+                                        class="calendar-task"
+                                        style="
+                                            grid-row-start: {task.start + 2};
+                                            grid-row-end: {task.end + 2};
+                                            grid-column-start: {index + 2};
+                                            grid-column-end: {index + 3};
+                                            background-color: {task.details.task_color};
+                                            transform: translateX({(task.slot / task.totalSlots) * 100}%);
+                                            width: {100 / task.totalSlots}%;
+                                        "
+                                        onclick={() => {
+                                            openTaskTitle = task.title;
+                                            show_tasks_modal = true;
+                                        }}>
+                                        <p>{task.title}</p>
+                                    </div>
+                                {/each}
+                            {/each}
+                        </div>
+                        <!-- {/each} -->
                     {:else if calendar_view == 3}
                         <div class="day-headings-only">
                             <h3 class="day-box">
