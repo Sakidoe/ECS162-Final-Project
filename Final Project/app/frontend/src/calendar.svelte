@@ -460,7 +460,7 @@
                     <div class = "week-headings-only">
                         {#each Array(7) as _, index (index)}
                             {#if weekday == index}
-                                <div class="week-headings" style="--color: green">
+                                <div class="week-headings" style="--background_color: rgba(104, 125, 49, .8)">
                                     <h3 class = "weekdays">{weekdays_spelled_out[index]}</h3>
                                 </div>
                             {:else}
@@ -470,20 +470,7 @@
                             {/if}
                         {/each}
                     </div>
-                    {/if}
-                    <!-- {#if calendar_view == 2}
-                        <div class = "week-headings-only">
-                            {#each weekDates as weekAndDate, index}
-                                <div class="week-calendar-box" style="--col_index: {index + 1}">
-                                    <h3 class="weekdays">
-                                        {weekdays_spelled_out[index]} {weekAndDate.split('/')[1]}
-                                    </h3>
-                                </div>
-                            {/each}
-                        </div>
-                    {/if} -->
-
-                    
+                    {/if}                    
                     {#if calendar_view == 1}
                         <div class="calendar-dates">
                             {#each Array(5) as _, row (row)}

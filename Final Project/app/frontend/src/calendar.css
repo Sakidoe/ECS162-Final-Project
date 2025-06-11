@@ -228,6 +228,7 @@
         border-radius: 5px;
         margin: 10px;
         border: 1px solid rgba(104, 125, 49, .8);
+        background-color: var(--background_color);
     }
 
     .week-header{
@@ -236,6 +237,7 @@
         font-size: 17px;
         background-color: white;
         padding: 0;
+        /* background-color: var(--background_color); */
     }
 
     .calendar-cell.heading {
