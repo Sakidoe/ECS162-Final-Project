@@ -1,13 +1,14 @@
 <script lang="ts">
+  import Sidebar from "./Sidebar.svelte";
+  import Task from "./task.svelte";
+
   let sidebarOpen = false;
-
   let tasks = [];
-
   let newTaskTitle = "";
   let newTaskTag = "";
   let newTaskPriority = "medium";
   let showCreateForm = false;
-  const userId = "david";
+  const userId = "jon";
 
   async function fetchTasks() {
     const res = await fetch(`http://localhost:8000/get_tasks/${userId}`, {
@@ -21,36 +22,24 @@
         date: t.task_date,
         tag: t.task_tags,
         priority: t.task_priority,
-        status: t.status ?? "task" // fallback to default
+        status: t.status ?? "task"
       }));
     }
   }
 
-  async function createTask() {
-    if (!newTaskTitle || !newTaskTag) return alert("Fill out all fields.");
-    await fetch("http://localhost:8000/create_task", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        user_id: userId,
-        task_name: newTaskTitle,
-        task_description: "n/a",
-        task_location: "n/a",
-        task_color: "gray",
-        task_label: "n/a",
-        task_start_time: "00:00",
-        task_end_time: "01:00",
-        task_date: "unknown",
-        task_tags: newTaskTag,
-        task_priority: newTaskPriority,
-        status: "task"
-      }),
-    });
-    newTaskTitle = "";
-    newTaskTag = "";
-    newTaskPriority = "medium";
-    showCreateForm = false;
-    fetchTasks();
+  async function deleteTask(title) {
+    try {
+      const res = await fetch('http://localhost:8000/delete_task', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, task_title: title })
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (data.success) tasks = tasks.filter(t => t.title !== title);
+    } catch (err) {
+      console.error('Failed to delete task:', err);
+    }
   }
 
   async function updateStatus(taskId: number, newStatus: string) {
@@ -65,7 +54,6 @@
     });
   }
 
-  // Derived groups
   $: taskGroup = tasks.filter(t => t.status === "task");
   $: inProgressGroup = tasks.filter(t => t.status === "in-progress");
   $: completedGroup = tasks.filter(t => t.status === "completed");
@@ -73,33 +61,23 @@
   fetchTasks();
 </script>
 
-
 <main class="layout">
-  <div class:sidebar-open={sidebarOpen} class="sidebar">
-    <div class="close-btn" on:click={() => sidebarOpen = false}>X</div>
-    <h2>NAME</h2>
-    <button class="nav-btn">dashboard</button>
-    <button class="nav-btn">teams</button>
-    <button class="nav-btn">calendar</button>
-    <div class="logout-container">
-      <div class="logout-icon"></div>
-      <span>logout</span>
-    </div>
-  </div>
+  <Sidebar {sidebarOpen} closeSidebar={() => sidebarOpen = false} />
 
   <div class:shifted={sidebarOpen} class="main-content">
     <header class="header">
       <div class="logo" on:click={() => sidebarOpen = true}></div>
-      <p class="title-header">ToDo – Week 9</p>
+      <p class="title-header">ToDo</p>
     </header>
-
-    <div class="search-bar"></div>
 
     <section class="board">
       <div class="column">
         <h2>task</h2>
-        {#each tasks as task, index}
+        {#each taskGroup as task, index}
           <div class="task-card">
+            <div class="close">
+              <button on:click={() => deleteTask(task.title).then(fetchTasks)} class="closeTask">X</button>
+            </div>
             <div class="task-header">
               <span>{task.title}</span>
               <span class="task-date">{task.date}</span>
@@ -107,130 +85,102 @@
             <div class="task-details">
               <div class="tag">{task.tag}</div>
               <div>priority: {task.priority}</div>
-
-              <div class="checkbox-wrapper">
-                <input 
-                  type="checkbox" 
-                  id="task-{index}" 
-                  name="task-{index}" 
-                  class="styled-checkbox"
-                />
-                <label for="task-{index}">{task.tag}</label>
-              </div>
+              <select on:change={(e) => updateStatus(task.id, e.target.value)}>
+                <option value="task" selected={task.status === "task"}>task</option>
+                <option value="in-progress" selected={task.status === "in-progress"}>in-progress</option>
+                <option value="completed" selected={task.status === "completed"}>completed</option>
+              </select>
             </div>
           </div>
         {/each}
 
-        <div class="task-card empty"></div>
         <div class="create-task">
-          {#if showCreateForm}
-            <input placeholder="Title" bind:value={newTaskTitle} />
-            <input placeholder="Tag" bind:value={newTaskTag} />
-            <select bind:value={newTaskPriority}>
-              <option value="high">high</option>
-              <option value="medium">medium</option>
-              <option value="low">low</option>
-            </select>
-            <button on:click={createTask}>✔</button>
-            <button on:click={() => showCreateForm = false}>✕</button>
-          {:else}
-            <button on:click={() => showCreateForm = true}>＋</button> create a new task
-          {/if}
+          <button on:click={() => { showCreateForm = true }}>+</button>
+          <p>Create a new task</p>
         </div>
 
+        {#if showCreateForm}
+          <Task
+            on:close={() => showCreateForm = false}
+            on:taskCreated={() => {
+              showCreateForm = false;
+              fetchTasks();
+            }}
+          />
+        {/if}
       </div>
 
       <div class="column">
         <h2>in-progress</h2>
-        <div class="task-card empty"></div>
-        <div class="task-card empty"></div>
+        {#each inProgressGroup as task}
+          <div class="task-card in-progress">
+            <div class="task-header">
+              <span>{task.title}</span>
+              <span class="task-date">{task.date}</span>
+            </div>
+            <div class="task-details">
+              <div class="tag">{task.tag}</div>
+              <div>priority: {task.priority}</div>
+              <select on:change={(e) => updateStatus(task.id, e.target.value)}>
+                <option value="task" selected={task.status === "task"}>task</option>
+                <option value="in-progress" selected={task.status === "in-progress"}>in-progress</option>
+                <option value="completed" selected={task.status === "completed"}>completed</option>
+              </select>
+            </div>
+          </div>
+        {/each}
       </div>
 
       <div class="column">
         <h2>completed</h2>
-        <div class="task-card empty"></div>
-        <div class="task-card empty"></div>
+        {#each completedGroup as task}
+          <div class="task-card completed">
+            <div class="task-header">
+              <span>{task.title}</span>
+              <span class="task-date">{task.date}</span>
+            </div>
+            <div class="task-details">
+              <div class="tag">{task.tag}</div>
+              <div>priority: {task.priority}</div>
+              <select on:change={(e) => updateStatus(task.id, e.target.value)}>
+                <option value="task" selected={task.status === "task"}>task</option>
+                <option value="in-progress" selected={task.status === "in-progress"}>in-progress</option>
+                <option value="completed" selected={task.status === "completed"}>completed</option>
+              </select>
+            </div>
+          </div>
+        {/each}
       </div>
     </section>
   </div>
 </main>
+
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
 
   * {
     font-family: 'Playfair Display', serif;
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
   }
 
-  body {
-    background-color: #dbe1d7; /* light sage gray */
+  body, html, main {
+    height: 100%;
+    width: 100%;
+    background-color: #1a1a1a;
+    color: #fff;
   }
 
   .layout {
     display: flex;
-  }
-
-  .sidebar {
-    position: fixed;
-    top: 0;
-    left: -320px;
-    width: 320px;
-    height: 100vh;
-    background-color: #4a572a; /* olive green */
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    transition: left 0.3s ease;
-    z-index: 10;
-    color: white;
-  }
-
-  .sidebar-open {
-    left: 0;
-  }
-
-  .close-btn {
-    align-self: flex-end;
-    cursor: pointer;
-    font-size: 1.2rem;
-    color: white;
-  }
-
-  .nav-btn {
-    background-color: #6f7d4c; /* muted olive */
-    border: none;
-    padding: 0.75rem;
-    border-radius: 6px;
-    cursor: pointer;
-    text-align: left;
-    font-size: 1rem;
-    color: white;
-  }
-
-  .logout-container {
-    margin-top: auto;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    color: white;
-  }
-
-  .logout-icon {
-    width: 24px;
-    height: 24px;
-    background-color: #8a9a5b;
-    border-radius: 4px;
+    min-height: 100vh;
   }
 
   .main-content {
-    margin-left: 0;
-    padding: 1rem;
     flex: 1;
+    padding: 1rem;
     transition: margin-left 0.3s ease;
-    width: 100%;
-    background-color: #dbe1d7;
   }
 
   .main-content.shifted {
@@ -242,28 +192,22 @@
     align-items: center;
     gap: 1rem;
     margin-bottom: 2rem;
+    border-bottom: 2px solid #333;
+    padding-bottom: 0.5rem;
   }
 
   .logo {
     width: 40px;
     height: 40px;
-    background-color: #3d4c1c;
+    background-color: #444;
     cursor: pointer;
   }
 
   .title-header {
-    font-size: 30px;
-    background-color: white;
-    padding: 0.5rem 2rem;
-    border: 1px solid #556b2f;
-    border-radius: 5px;
-  }
-
-  .search-bar {
-    height: 40px;
-    background-color: #e2e8d5;
-    border-radius: 6px;
-    margin-bottom: 1rem;
+    font-size: 2rem;
+    font-weight: bold;
+    flex-grow: 1;
+    text-align: center;
   }
 
   .board {
@@ -280,28 +224,27 @@
 
   .column h2 {
     text-align: center;
-    background-color: #5b6d2f;
-    color: white;
+    background-color: #333;
     padding: 0.5rem;
     border-radius: 6px;
   }
 
-  .column:nth-child(2) h2 {
-    background-color: #88a595;
-  }
-
-  .column:nth-child(3) h2 {
-    background-color: #99b6db;
-  }
-
   .task-card {
-    background-color: #5b6d2f; /* dark olive */
-    color: white;
+    background-color: #333;
     padding: 1rem;
     border-radius: 6px;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    position: relative;
+  }
+
+  .task-card.in-progress {
+    background-color: #295ba7;
+  }
+
+  .task-card.completed {
+    background-color: #2a7a2a;
   }
 
   .task-header {
@@ -315,30 +258,23 @@
   }
 
   .tag {
-    background-color: #8c9c61;
+    background-color: #666;
     display: inline-block;
     padding: 0.2rem 0.5rem;
     border-radius: 4px;
-    color: white;
-  }
-
-  .task-card.empty {
-    height: 100px;
-    background-color: #aab78a;
   }
 
   .create-task {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background-color: #5b6d2f;
+    background-color: #444;
     padding: 0.5rem;
     border-radius: 6px;
-    color: white;
   }
 
   .create-task button {
-    background-color: white;
+    background-color: #888;
     border: none;
     width: 24px;
     height: 24px;
@@ -346,58 +282,21 @@
     font-size: 18px;
     font-weight: bold;
     cursor: pointer;
-    color: #5b6d2f;
+    color: white;
   }
 
-  .checkbox-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-  }
-
-  .styled-checkbox {
-    appearance: none;
-    width: 1.2rem;
-    height: 1.2rem;
-    border: 2px solid white;
-    border-radius: 0.25rem;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    position: relative;
-    background-color: transparent;
-  }
-
-  .styled-checkbox:checked {
-    background-color: #ffffff;
-    border-color: #ffffff;
-  }
-
-  .styled-checkbox:checked::after {
-    content: '';
+  .close {
     position: absolute;
-    left: 0.35rem;
-    top: 0.05rem;
-    width: 0.25rem;
-    height: 0.6rem;
-    border: solid #5b6d2f;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-  }
-  html, body {
-    margin: 0 !important;
-    padding: 0 !important;
-    border: none !important;
-    background-color: #dbe1d7 !important;
-    height: 100%;
-    width: 100%;
-    overflow-x: hidden;
+    top: 0.5rem;
+    right: 0.5rem;
   }
 
-  main.layout {
-    border: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
+  .closeTask {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
   }
-
 </style>

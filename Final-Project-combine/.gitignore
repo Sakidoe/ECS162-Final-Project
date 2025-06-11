@@ -1,5 +1,0 @@
-.env.prod
-node_modules
-package-lock.json
-.DS_STORE
-.anaconda/
