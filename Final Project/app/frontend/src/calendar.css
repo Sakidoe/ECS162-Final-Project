@@ -222,8 +222,6 @@
     }
 
     .week-headings{
-        /* grid-column: var(--col_index);
-        grid-row: var(--row_index); */
         color: black;
         font-size: 20px;
         text-align: center;
@@ -241,8 +239,6 @@
     }
 
     .calendar-cell.heading {
-        /* grid-column: var(--col_index);
-        grid-row: var(--row_index); */
         color: black;
         font-size: 20px;
         text-align: center;
@@ -263,7 +259,6 @@
     }
 
     .calendar-dates{
-        /* aspect-ratio: 1/1; */
         height: 700px;
         display: grid;
         grid-template-columns: repeat(7, 1fr);
@@ -277,7 +272,6 @@
         margin: 0;
         padding: 10px;
         border-radius: 15px;
-        /* border-right: 1px solid rgba(104, 125, 49, 1); */
         margin-left: 5%;
         margin: 10px;
         padding: 0;
@@ -338,7 +332,7 @@
     }
 
     .calendar-cell {
-        border: 1px solid #ddd;
+        border: 1px solid #dddddd;
         padding: 4px;
         box-sizing: border-box;
         font-weight: 100;
@@ -405,8 +399,6 @@
     }
 
     .task-description{
-        /* border: none;
-        border-bottom: 1px solid black; */
         border: 1px solid #B1B1B1;
         border-radius: 5px;
         width: 250px;
@@ -469,8 +461,8 @@
 
     .day-calendar-grid {
         display: grid;
-        grid-template-columns: 100px 1fr; /* time column, task column */
-        grid-template-rows: 40px repeat(48, 1fr); /* header + 30-min rows */
+        grid-template-columns: 100px 1fr;
+        grid-template-rows: 40px repeat(48, 1fr);
         width: 100%;
         height: 100vh;
         border: 1px solid #ddd;
@@ -482,7 +474,6 @@
         grid-column: 1;
         grid-row: 1;
         text-align: center;
-        /* margin: 10px 0 10px 10px; */
         padding: 20px;
         align-items: center;
         justify-content: center;
@@ -498,11 +489,11 @@
         grid-column: 1;
         text-align: right;
         padding-right: 6px;
-        font-size: 0.85rem;
+        font-size: 14px;
         line-height: 1;
         display: flex;
         align-items: center;
-        border-top: 1px solid #eee;
+        border-top: 1px solid #eeeeee;
     }
 
     .calendar-task-day-page {
@@ -512,9 +503,7 @@
         box-sizing: border-box;
         border-radius: 4px;
         color: white;
-        font-size: 0.85rem;
-        cursor: pointer;
-        z-index: 2;
+        font-size: 14px;
     }
     
     .priority{
@@ -531,7 +520,6 @@
         margin: 5px;
         align-items: end;
         float: right;
-        /* margin-right: 30px; */
     }
 
     .submit-button{
