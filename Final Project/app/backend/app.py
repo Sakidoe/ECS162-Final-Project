@@ -233,9 +233,16 @@ def delete_note():
     request_dictionary = request.get_json()
     note_title = request_dictionary['note_title']
     user_id = request_dictionary['user_id']
-    user = find_user(user_id)
     db.notes.update_one({"ID": user_id}, {"$unset": {f"notes.{note_title}": 1}})
     return jsonify({"success": "note deleted successfully"})
+
+@app.route("/delete_task", methods=["POST"])
+def delete_task():
+    request_dictionary = request.get_json()
+    task_title = request_dictionary['task_title']
+    user_id = request_dictionary['user_id']
+    db.notes.update_one({"ID": user_id}, {"$unset": {f"tasks.{task_title}": 1}})
+    return jsonify({"success": "task deleted successfully"})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8000)
