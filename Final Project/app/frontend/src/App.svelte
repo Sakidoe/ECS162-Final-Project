@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import Calendar from './calendar.svelte';
 
-  let user = null;
+  let user: { name: any; picture: any; } | null = null;
 
   onMount(async () => {
     try {
