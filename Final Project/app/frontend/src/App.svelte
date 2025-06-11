@@ -486,7 +486,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background: #4CAF50;
+    background: #687D31;
     color: white;
     border: none;
     padding: 0.75rem 1.5rem;
