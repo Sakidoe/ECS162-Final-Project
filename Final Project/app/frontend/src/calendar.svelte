@@ -273,8 +273,7 @@
             task_label_text_input = '';
             task_start_time_text_input = '';
             task_end_time_text_input = '';
-            task_date_text_input = '';
-            task_tags_text_input = '';
+            task_tags_text_input = [''];
             task_priority_text_input = '';
             show_tasks_modal = false; 
             openTaskTitle = null;
@@ -294,10 +293,8 @@
     let task_label_text_input = $state('');
     let task_start_time_text_input = $state('');
     let task_end_time_text_input = $state('');
-    let task_date_text_input = $state('');
     let task_priority_text_input = $state('');
     let task_tags_text_input = $state(['']);
-    let multiple_tasks = 0;
 
 
     let calendar_view = $state(1);
@@ -328,20 +325,7 @@
         }
         loading = false;
     }
-
-    function getTasksForWeek(weekAndDate: string) {
-		const matchingTasks = [];
-
-		for (const [title, details] of Object.entries(tasks)) {
-			const [m, d, y] = details.task_date.split('/').map(Number);
-			if (m === month + 1 && d === Number(weekAndDate.split('/')[1]) && y === year) {
-				matchingTasks.push({ title, details });
-			}
-		}
-		return matchingTasks;
-	}
-    
-    
+        
     today = new Date();
     let day = today.getDay();
     let weekDates = [];
@@ -353,100 +337,6 @@
     }
 
     let times = ['12:00', '1:00', '2:00', '3:00', '4:00', '5:00', '6:00', '7:00', '8:00', '9:00', '10:00', '11:00', '12:00', '1:00', '2:00', '3:00', '4:00', '5:00', '6:00', '7:00', '8:00', '9:00', '10:00', '11:00']
-
-    
-
-    function backArrow() {
-        if (calendar_view == 1) {
-            if (current_viewing_month == 0) {
-                current_viewing_month = 11;
-                current_viewing_year--;
-            } else {
-                current_viewing_month--;
-            }
-        } else if (calendar_view == 2) {
-            if (current_viewing_day <= 8) {
-                let overflow = current_viewing_day - 7;
-                if (current_viewing_month == 4 || current_viewing_month == 6 || current_viewing_month == 7 || current_viewing_month == 9 || current_viewing_month == 11) {
-                    current_viewing_month--;
-                    current_viewing_day = 30 + overflow;
-                } else if (current_viewing_month == 2) {
-                    current_viewing_month--;
-                    current_viewing_day = 28 + overflow;
-                } else if (current_viewing_month == 0) {
-                    current_viewing_month = 11;
-                    current_viewing_year--;
-                    current_viewing_day = 31 + overflow;
-                } else {
-                    current_viewing_month--;
-                    current_viewing_day = 31 + overflow;
-                }
-            } else {
-                current_viewing_day -= 7;
-            }
-        } else {
-            if (current_viewing_day == 1) {
-                if (current_viewing_month == 4 || current_viewing_month == 6 || current_viewing_month == 7 || current_viewing_month == 9 || current_viewing_month == 11) {
-                    current_viewing_month--;
-                    current_viewing_day = 30;
-                } else if (current_viewing_month == 2) {
-                    current_viewing_month--;
-                    current_viewing_day = 28;
-                } else if (current_viewing_month == 0) {
-                    current_viewing_month = 11;
-                    current_viewing_year--;
-                    current_viewing_day = 31;
-                } else {
-                    current_viewing_month--;
-                    current_viewing_day = 31;
-                }
-            } else {
-                current_viewing_day--;
-            }
-        }
-    }
-
-    function forwardArrow() {
-        if (calendar_view == 1) {
-            if (current_viewing_month == 11) {
-                current_viewing_month = 0;
-                current_viewing_year++;
-            } else {
-                current_viewing_month++;
-            }
-        } else if (calendar_view == 2) {
-            
-        } else {
-            if (current_viewing_month == 1 && current_viewing_day == 28) {
-                current_viewing_day = 1;
-                current_viewing_month++;
-            } else if (current_viewing_month == 0 || current_viewing_month == 4 || current_viewing_month == 6 || current_viewing_month == 7 || current_viewing_month == 9) {
-                if (current_viewing_day == 31) {
-                    current_viewing_day = 1;
-                    current_viewing_month++;
-                } else {
-                    current_viewing_day++;
-                }
-            } else if (current_viewing_month == 11) {
-                if (current_viewing_day == 31) {
-                    current_viewing_day = 1;
-                    current_viewing_month = 0;
-                    current_viewing_year++;
-                } else {
-                    current_viewing_day++;
-                }
-            } else {
-                if (current_viewing_day == 30) {
-                    current_viewing_day = 1;
-                    current_viewing_month++;
-                } else {
-                    current_viewing_day++;
-                }
-            }
-        }
-    }
-
-    
 
     setup(user);
 </script>
@@ -673,7 +563,7 @@
 
                             <!-- Task Blocks -->
                             {#each weekDates as weekAndDate, index}
-                                <div class="week-add-task-box" style="--col: {index + 2}" onclick={() => {add_task_date = String(month) + '/' + weekAndDate.split('/')[1] + '/' + String(year); add_tasks_modal = true}}></div>
+                                <div class="week-add-task-box" style="--col: {index + 2}" onclick={() => {add_task_date = String(month + 1) + '/' + weekAndDate.split('/')[1] + '/' + String(year); add_tasks_modal = true}}></div>
                                 {#each getPositionedTasks(tasks, weekAndDate) as task}
                                     <div
                                         class="calendar-task-week-page"
@@ -707,7 +597,7 @@
                                 {/each}
                             </h3>
                         </div> -->
-                        <div class="day-calendar-grid" onclick={() => {add_task_date = String(month) + '/' + current_viewing_day + '/' + String(year); add_tasks_modal = true}}>
+                        <div class="day-calendar-grid" onclick={() => {add_task_date = String(month + 1) + '/' + current_viewing_day + '/' + String(year); add_tasks_modal = true}}>
                             <!-- Weekday Heading -->
                             <div class="day-header">{weekdays_spelled_out[weekday]} {current_viewing_day}</div>
 
