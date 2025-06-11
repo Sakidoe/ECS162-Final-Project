@@ -562,9 +562,10 @@
                 <div class="main-calendar">
                     <!-- <div class = "week-headings-only"> -->
                     {#if calendar_view == 1}
+                    <div class = "week-headings-only">
                         {#each Array(7) as _, index (index)}
                             {#if weekday == index}
-                                <div class="week-headings" style="--row_index: {1}; --col_index: {index + 1}; --color: green">
+                                <div class="week-headings" style="--color: green">
                                     <h3 class = "weekdays">{weekdays_spelled_out[index]}</h3>
                                 </div>
                             {:else}
@@ -573,6 +574,7 @@
                                 </div>
                             {/if}
                         {/each}
+                    </div>
                     {/if}
                     <!-- {#if calendar_view == 2}
                         <div class = "week-headings-only">
@@ -653,7 +655,7 @@
                                         grid-row: 1;
                                         grid-column: {index + 2};
                                     ">
-                                    <h3>{weekdays_spelled_out[index]} {weekAndDate.split('/')[1]}</h3>
+                                    <h3>{weekAndDate.split('/')[1]} {weekdays_spelled_out[index]}</h3>
                                 </div>
                             {/each}
 
