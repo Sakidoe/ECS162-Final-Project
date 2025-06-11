@@ -272,25 +272,6 @@
         color: var(--text_color);
     }
 
-    .week-calendar-box {
-        /* display: grid;
-        grid-template-rows: repeat(24, auto [row-start]);
-        grid-column: var(--col_index);
-        grid-row-start: 1;
-        grid-row-end: 24; */
-        grid-row-end: 5;
-        /* border-right: 1px solid rgba(104, 125, 49, 1); */
-        /* margin-left: 5%; */
-        margin: 10px;
-        padding: 0;
-        font-size: 20px;
-        color: black;
-        justify-content: center;
-        /* align-items: center; */
-        font-size: 17px;
-        border-radius: 5px;
-    }
-
     .calendar-dates .week-calendar-box {
         border-right: 1px solid rgba(104, 125, 49, 1);
         border-radius: 0;
@@ -300,27 +281,10 @@
         border-right: none;
     }
 
-    /* .calendar-grid {
-        display: grid;
-        grid-template-rows: repeat(24, 1fr); 
-        grid-template-columns: repeat(8, 1fr);
-        /* grid-column-start: var(--col_start);
-        grid-column-end: var(--col_end); 
-    } */
-
     .day-box {
         grid-row-start: var(--row_start);
         grid-row-end: var(--row_end);
         border: 2px solid black;
-    }
-
-    .calendar-task-week-page {
-        grid-row-start: var(--row_start);
-        grid-row-end: var(--row_end);
-        grid-column-start: var(--col_start);
-        grid-column-end: var(--col_end);
-        background-color: var(--background_color);
-        position: relative;
     }
 
     .day-calendar-box {
@@ -337,11 +301,6 @@
         border-radius: 6%;
         margin-left: 2%;
         margin-right: 2%;
-    }
-
-    .timestamps {
-        grid-column: 1;
-        grid-row: var(--row);
     }
 
     .calendar-grid {
@@ -377,54 +336,6 @@
         border-radius: 4px;
         color: white;
         overflow: hidden;
-    }
-
-    .task-container{
-        width: 400px;
-        height: 300px;
-        color: black;
-    }
-
-    .task-title{
-        color: black;
-        border: none;
-        border-bottom: 1px solid black;
-        width: 363px;
-        font-size: 30px;
-        font-weight: 100 !important;
-        margin: 10px 0;
-    }
-
-    .task-label{
-        display: flex;
-        margin: 10px 0;
-        font-weight: 100;
-        padding: 10px;
-        border-radius: 5px;
-        width: 80px;
-        background-color: #F4F4F4;
-        border: 1px solid #f4f4f4;
-        text-align: center;
-    }
-
-    .task-description{
-        /* border: none;
-        border-bottom: 1px solid black; */
-        border: 1px solid black;
-        border-radius: 5px;
-        width: 363px;
-        font-size: 20px;
-        margin: 10px 0;
-    }
-
-    .task-date,
-    .start-time,
-    .end-time{
-        background-color: #F4F4F4;
-        border: none;
-        width: 80px;
-        text-align: center;
-        padding: 10px;
     }
 
     .task-container{

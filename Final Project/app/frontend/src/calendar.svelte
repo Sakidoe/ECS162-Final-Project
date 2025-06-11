@@ -533,7 +533,6 @@
                         <button class="indv-date-buttons" class:curr_tab={calendar_view === 2} onclick={() => calendar_view = 2}>Week</button>
                         <button class="indv-date-buttons" class:curr_tab={calendar_view === 3} onclick={() => calendar_view = 3}>Day</button>
                     </div>
-                    <button onclick={(() => (add_tasks_modal = true))}>Add Task</button>
                     <Add_Task_Modal bind:add_tasks_modal>
                         {#snippet header()}
                             <!-- <h2>Add a Task</h2> -->
