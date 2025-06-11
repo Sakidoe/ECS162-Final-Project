@@ -1,4 +1,5 @@
 <script lang="ts">
+  import taskifyLogo from './assets/Taskify.svg';
   // Screen state
   let currentScreen: 'welcome' | 'login' | 'signup' | 'teams' = 'welcome';
   
@@ -237,7 +238,9 @@
         <button class="back-button" on:click={() => currentScreen = 'welcome'}>← Back</button>
         
         <div class="auth-form">
-          <div class="logo">LOGO</div>
+          <div class="logo">
+            <img src={taskifyLogo} alt="Taskify Logo" class="logo">
+          </div>
           <h2>Welcome Back</h2>
           <p>Please enter your details</p>
           
