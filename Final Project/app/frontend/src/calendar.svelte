@@ -533,38 +533,6 @@
                         <button class="indv-date-buttons" class:curr_tab={calendar_view === 2} onclick={() => calendar_view = 2}>Week</button>
                         <button class="indv-date-buttons" class:curr_tab={calendar_view === 3} onclick={() => calendar_view = 3}>Day</button>
                     </div>
-                    <Add_Task_Modal bind:add_tasks_modal>
-                        {#snippet header()}
-                            <!-- <h2>Add a Task</h2> -->
-                        {/snippet}
-                        <div class="task-container">
-                            <!-- <h4>Task Title</h4> -->
-                            <input class="task-title" placeholder="Task Title" bind:value={task_title_text_input}/>
-                            <!-- <h4>Task Label</h4> -->
-                            <input class="task-label" placeholder="Add Label" bind:value={task_label_text_input}/>
-                            <!-- <h4>Task Date</h4> -->
-                             <div>
-                                <img src="/clock.svg" alt="Clock Icon" class="clock-icon"/>
-                                <input class="task-date" placeholder="Date" bind:value={task_date_text_input}/>
-                                <span>:</span>
-                                <input class="start-time" placeholder="Start Time" bind:value={task_start_time_text_input}/>
-                                <span>-</span>
-                                <input class="end-time" placeholder="End Time" bind:value={task_end_time_text_input}/>  
-                             </div>
-                    
-                            <!-- <h4>Task Description</h4> -->
-                            <input class="task-description" placeholder="Add Description" bind:value={task_description_text_input}/>
-                            <h4>Task Location</h4>
-                            <input bind:value={task_location_text_input}/>
-                            <h4>Task Color</h4>
-                            <input bind:value={task_color_text_input}/>
-                            <h4>Task Tags</h4>
-                            <input bind:value={task_tags_text_input}/>
-                            <h4>Task Priority</h4>
-                            <input bind:value={task_priority_text_input}/>
-                            <button onclick={() => add_task(task_title_text_input, task_description_text_input, task_location_text_input, task_color_text_input, task_label_text_input, task_start_time_text_input, task_end_time_text_input, task_date_text_input, task_tags_text_input, task_priority_text_input)}>Submit</button>
-                        </div>
-                    </Add_Task_Modal>
                 </div>
                 <div class="main-calendar">
                     <!-- <div class = "week-headings-only"> -->
@@ -733,29 +701,35 @@
             {#key add_task_date}
                 <Add_Task_Modal bind:add_tasks_modal bind:add_task_date>
                     {#snippet header()}
-                        <h2>Add a Task</h2>
+                        <!-- <h2>Add a Task</h2> -->
                     {/snippet}
-                    <h4>Task Title</h4>
-                    <input bind:value={task_title_text_input}/>
-                    <h4>Task Description</h4>
-                    <input bind:value={task_description_text_input}/>
-                    <h4>Task Location</h4>
-                    <input bind:value={task_location_text_input}/>
-                    <h4>Task Color</h4>
-                    <input bind:value={task_color_text_input}/>
-                    <h4>Task Label</h4>
-                    <input bind:value={task_label_text_input}/>
-                    <h4>Task Start Time</h4>
-                    <input bind:value={task_start_time_text_input}/>
-                    <h4>Task End Time</h4>
-                    <input bind:value={task_end_time_text_input}/>
-                    <h4>Task Date</h4>
-                    <input bind:value={add_task_date}/>
-                    <h4>Task Tags</h4>
-                    <input bind:value={task_tags_text_input}/>
-                    <h4>Task Priority</h4>
-                    <input bind:value={task_priority_text_input}/>
-                    <button onclick={() => add_task(task_title_text_input, task_description_text_input, task_location_text_input, task_color_text_input, task_label_text_input, task_start_time_text_input, task_end_time_text_input, add_task_date, task_tags_text_input, task_priority_text_input)}>Submit</button>
+                    <div class="task-container">
+                        <!-- <h4>Task Title</h4> -->
+                        <input class="task-title" placeholder="Task Title" bind:value={task_title_text_input}/>
+                        <!-- <h4>Task Label</h4> -->
+                        <input class="task-label" placeholder="Add Label" bind:value={task_label_text_input}/>
+                        <!-- <h4>Task Date</h4> -->
+                            <div>
+                            <img src="/clock.svg" alt="Clock Icon" class="clock-icon"/>
+                            <input class="task-date" placeholder="Date" bind:value={task_date_text_input}/>
+                            <span>:</span>
+                            <input class="start-time" placeholder="Start Time" bind:value={task_start_time_text_input}/>
+                            <span>-</span>
+                            <input class="end-time" placeholder="End Time" bind:value={task_end_time_text_input}/>  
+                            </div>
+                
+                        <!-- <h4>Task Description</h4> -->
+                        <input class="task-description" placeholder="Add Description" bind:value={task_description_text_input}/>
+                        <h4>Task Location</h4>
+                        <input bind:value={task_location_text_input}/>
+                        <h4>Task Color</h4>
+                        <input bind:value={task_color_text_input}/>
+                        <h4>Task Tags</h4>
+                        <input bind:value={task_tags_text_input}/>
+                        <h4>Task Priority</h4>
+                        <input bind:value={task_priority_text_input}/>
+                        <button onclick={() => add_task(task_title_text_input, task_description_text_input, task_location_text_input, task_color_text_input, task_label_text_input, task_start_time_text_input, task_end_time_text_input, task_date_text_input, task_tags_text_input, task_priority_text_input)}>Submit</button>
+                    </div>
                 </Add_Task_Modal>
             {/key}
         {/if}
