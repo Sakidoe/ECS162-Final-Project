@@ -664,12 +664,16 @@
                             <input class="color-picker" placeholder="Enter Color" bind:value={details.task_color}/>
                         </span>
                         <!-- <h4>Task Color</h4> -->
-        
-                        <h4>Task Priority</h4>
-                        <input bind:value={details.task_priority}/>
-                        <button onclick={() => add_task(openTaskTitle, details.task_description, details.task_location, details.task_color, details.task_label, details.task_start_time, details.task_end_time, details.task_date, details.task_tags, details.task_priority)}>Submit</button>
-                        <button onclick={() => {show_tasks_modal = false; openTaskTitle = null; add_tasks_modal = false;}}>Close</button>
-                        <button onclick={() => delete_task(openTaskTitle)}>Delete</button>
+                        <div class="priority-container">
+                            <img src="/priority.svg" alt="Priority Icon" class ="priority-icon"/>
+                            <h4 class="priority-name">Task Priority</h4>
+                            <input class="prioirty-input" placeholder="Enter Priority" bind:value={details.task_priority}/>
+                        </div>
+                        <!-- <h4 class=>Task Priority</h4>
+                        <input bind:value={details.task_priority}/> -->
+                        <button class="submit-button" onclick={() => add_task(openTaskTitle, details.task_description, details.task_location, details.task_color, details.task_label, details.task_start_time, details.task_end_time, details.task_date, details.task_tags, details.task_priority)}>Submit</button>
+                        <button class="close-button" onclick={() => {show_tasks_modal = false; openTaskTitle = null; add_tasks_modal = false;}}>Close</button>
+                        <button class="delete-button" onclick={() => delete_task(openTaskTitle)}>Delete</button>
                     </div>
                 </Tasks_Modal>
             {/key}

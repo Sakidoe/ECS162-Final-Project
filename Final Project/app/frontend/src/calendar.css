@@ -405,7 +405,7 @@
         border-radius: 5px;
         width: 250px;
         font-size: 15px;
-        margin: 10px 0 10px 40px;
+        margin: 10px 0px 10px 55px;
         height: 25px;
     }
 
@@ -438,7 +438,8 @@
     .notes-elements,
     .location-elements,
     .task-color-elements,
-    .priority-elements{
+    .priority-elements,
+    .priority-container{
         display: flex;
         align-items: center;
     }
@@ -448,7 +449,7 @@
         border-radius: 5px;
         width: 250px;
         font-size: 15px;
-        margin: 10px 21px;
+        margin: 10px 0px 10px 35px;
         height: 25px;
     }
 
@@ -457,7 +458,7 @@
         border-radius: 5px;
         width: 250px;
         font-size: 15px;
-        margin: 10px 11px;
+        margin: 10px 0px 10px 25px;
         height: 25px;
     }
 
@@ -518,14 +519,33 @@
     }
 
     .submit-button,
-    .close-button{
+    .close-button,
+    .delete-button{
         margin: 5px;
         align-items: end;
         float: right;
     }
 
     .submit-button{
-        margin-right: 35px;
+        margin-right: 20px;
+        margin-top: 10px;
+        /* margin: 10px; */
+        padding: 5px;
+        width: 100px;
+        border-radius: 5px;
+        border: 1px solid rgba(104, 125, 49, 1);
+        background-color: rgba(104, 125, 49, .5);
+    }
+
+    .delete-button{
+        /* margin-right: 30px; */
+        margin-top: 10px;
+        /* margin: 10px; */
+        padding: 5px;
+        width: 100px;
+        border-radius: 5px;
+        border: 1px solid rgba(104, 125, 49, 1);
+        background-color: rgba(104, 125, 49, .5);
     }
 
     .week-add-task-box {
@@ -570,4 +590,17 @@
 
     .resolve-div{
         border-bottom: 1px solid rgba(104, 125, 49, 1);
+    }
+
+    .priority-name{
+        font-weight: 100;
+    }
+
+    .prioirty-input{
+        border: 1px solid #B1B1B1;
+        border-radius: 5px;
+        width: 250px;
+        font-size: 15px;
+        margin: 10px 11px;
+        height: 25px;
     }
