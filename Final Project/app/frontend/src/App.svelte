@@ -129,42 +129,50 @@ async function addTask() {
     return;
   }
 
+  if (!selectedTeam) {
+    taskError = "No team selected.";
+    return;
+  }
+
   try {
     isLoading = true;
-    const response = await fetch("http://localhost:8000/create_task", {
+
+    const response = await fetch("http://localhost:8000/create_team_task", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         user_id: currentUser.id,
         task_name: newTaskName,
         task_description: newTaskDescription || "",
-        task_location: "",         // default empty string, update if you have location input
-        task_color: "",            // default empty string, update if you have color picker
-        task_label: "",            // default empty string, update if you have label input
-        task_start_time: "",       // default empty string, update if you have start time input
-        task_end_time: "",         // default empty string, update if you have end time input
-        task_date: "",             // default empty string, update if you have date input
-        task_tags: [],             // default empty array, update if you have tags input
-        task_priority: "Medium"
+        task_team: selectedTeam,
+        task_assignees: [],        // Or pass actual assignees if you have
+        task_priority: "Medium",   // You can replace with actual priority from your UI
+        task_due_date: "",         // You can add a due date input to your UI and send here
       }),
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      taskError = data.error || "Failed to add task.";
+      taskError = data.error || "Failed to add team task.";
       return;
     }
 
+    // Clear inputs
     newTaskName = "";
     newTaskDescription = "";
-    await viewTeamTasks(selectedTeam!);  // Reload task list
+
+    // Reload tasks for the selected team
+    await viewTeamTasks(selectedTeam);
+
   } catch (err) {
-    taskError = "Error adding task.";
+    taskError = "Error adding team task.";
+    console.error(err);
   } finally {
     isLoading = false;
   }
 }
+
 
   function logout() {
     currentUser = {};

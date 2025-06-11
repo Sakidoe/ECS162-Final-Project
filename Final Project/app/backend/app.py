@@ -173,21 +173,6 @@ def get_teams(user_id):
     else:
         teams = user[0]['teams']
         return jsonify({"teams": teams})
-    
-@app.route("/get_tasks/<user_id>/<team_name>", methods=["GET"])
-def get_tasks_for_team(user_id, team_name):
-    user = find_user(user_id)
-    if len(user) == 0:
-        return jsonify({"tasks": {}}), 404
-    
-    teams = user[0].get("teams", {})
-    team_tasks = teams.get(team_name)
-    
-    if not team_tasks:
-        return jsonify({"tasks": {}}), 404
-    
-    return jsonify({"tasks": team_tasks})
-
 
 @app.route("/create_note", methods=["POST"])
 def create_note():
@@ -225,43 +210,6 @@ def create_task():
         db.notes.update_one({"ID": user_id}, {"$set": {f"tasks.{task_name}": {"task_description": task_description, "task_location": task_location, "task_color": task_color, "task_label": task_label, "task_start_time": task_start_time, "task_end_time": task_end_time, "task_date": task_date, "task_tags": task_tags, "task_priority": task_priority}}})
     return jsonify({"success": "event created successfully"})
 
-@app.route("/create_team", methods=["POST"])
-def create_team():
-    data = request.get_json()
-    user_id = data.get('user_id')
-    team_name = data.get('team_name')
-
-    if not user_id or not team_name:
-        return jsonify({"error": "Missing user_id or team_name"}), 400
-
-    user = find_user(user_id)
-
-    # New team structure, adjust as needed
-    new_team_data = {
-        # Example: empty dictionary for tasks or metadata inside team
-    }
-
-    if len(user) == 0:
-        # Create new user document with this team
-        db.notes.insert_one({
-            "ID": user_id,
-            "notes": {},
-            "tasks": {},
-            "teams": {team_name: new_team_data}
-        })
-    else:
-        # Update existing user document with new team
-        existing_teams = user[0].get("teams", {})
-        if team_name in existing_teams:
-            return jsonify({"error": "Team already exists"}), 400
-        
-        db.notes.update_one(
-            {"ID": user_id},
-            {"$set": {f"teams.{team_name}": new_team_data}}
-        )
-
-    return jsonify({"success": "Team created successfully"})
-
 @app.route("/create_team_task", methods=["POST"])
 def create_team_task():
     request_dictionary = request.get_json()
@@ -279,6 +227,31 @@ def create_team_task():
     else:
         db.notes.update_one({"ID": user_id}, {"$set": {f"teams.{task_team}": {task_name: {"task_description": task_description, "task_assignees": task_assignees, "task_priority": task_priority, "task_due_date": task_due_date}}}})
     return jsonify({"success": "team task created successfully"})
+
+@app.route("/delete_note", methods=["POST"])
+def delete_note():
+    request_dictionary = request.get_json()
+    note_title = request_dictionary['note_title']
+    user_id = request_dictionary['user_id']
+    db.notes.update_one({"ID": user_id}, {"$unset": {f"notes.{note_title}": 1}})
+    return jsonify({"success": "note deleted successfully"})
+
+@app.route("/delete_task", methods=["POST"])
+def delete_task():
+    request_dictionary = request.get_json()
+    task_title = request_dictionary['task_title']
+    user_id = request_dictionary['user_id']
+    db.notes.update_one({"ID": user_id}, {"$unset": {f"tasks.{task_title}": 1}})
+    return jsonify({"success": "task deleted successfully"})
+
+@app.route("/delete_team_task", methods=["POST"])
+def delete_team_task():
+    request_dictionary = request.get_json()
+    team = request_dictionary['team']
+    task_name = request_dictionary['task_name']
+    user_id = request_dictionary['user_id']
+    db.notes.update_one({"ID": user_id}, {"$unset": {f"teams.{team}.{task_name}": 1}})
+    return jsonify({"success": "team task deleted successfully"})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8000)
