@@ -19,7 +19,6 @@
 		{@render children?.()}
 		<!-- <button autofocus onclick={() => dialog.close()}>Close</button> -->
 		<!-- <button onclick={() => dialog.close()}>Close</button> -->
-
 	</div>
 	<!-- <button autofocus onclick={() => dialog.close()}>Close</button> -->
 </dialog>
