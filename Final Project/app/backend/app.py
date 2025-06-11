@@ -220,12 +220,41 @@ def create_team_task():
     task_assignees = request_dictionary['task_assignees']
     task_priority = request_dictionary['task_priority']
     task_due_date = request_dictionary['task_due_date']
+
     user = find_user(user_id)
     if len(user) == 0:
-        db.notes.insert_one({"ID": user_id, "tasks": {}, "notes": {}, "teams": {}})
-        db.notes.update_one({"ID": user_id}, {"$set": {f"teams.{task_team}": {task_name: {"task_description": task_description, "task_assignees": task_assignees, "task_priority": task_priority, "task_due_date": task_due_date}}}})
+        # Create a new user with the team and initial task
+        db.notes.insert_one({
+            "ID": user_id,
+            "tasks": {},
+            "notes": {},
+            "teams": {
+                task_team: {
+                    task_name: {
+                        "task_description": task_description,
+                        "task_assignees": task_assignees,
+                        "task_priority": task_priority,
+                        "task_due_date": task_due_date
+                    }
+                }
+            }
+        })
     else:
-        db.notes.update_one({"ID": user_id}, {"$set": {f"teams.{task_team}": {task_name: {"task_description": task_description, "task_assignees": task_assignees, "task_priority": task_priority, "task_due_date": task_due_date}}}})
+        # Add new task without overwriting previous ones
+        db.notes.update_one(
+            {"ID": user_id},
+            {
+                "$set": {
+                    f"teams.{task_team}.{task_name}": {
+                        "task_description": task_description,
+                        "task_assignees": task_assignees,
+                        "task_priority": task_priority,
+                        "task_due_date": task_due_date
+                    }
+                }
+            }
+        )
+
     return jsonify({"success": "team task created successfully"})
 
 @app.route("/delete_note", methods=["POST"])

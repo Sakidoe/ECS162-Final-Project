@@ -21,6 +21,15 @@ export default app
         //   }),
         //   headers: {'Content-Type': 'application/json'}
         // });
+    //     const response1 = await fetch("http://localhost:8000/create_note", {
+    //       method: "POST",
+    //       body: JSON.stringify({
+    //         user_id: 'david',
+    //         note: 'testing testing testing testing',
+    //         note_title: 'hello world'
+    //       }),
+    //       headers: {'Content-Type': 'application/json'}
+    //     });
 
     //     const notes = await fetch("http://localhost:8000/get_notes/" + 'david', {
     //       method: "GET",
@@ -49,6 +58,23 @@ export default app
       //   }),
       //   headers: {'Content-Type': 'application/json'}
       // });
+    //   const response2 = await fetch("http://localhost:8000/create_task", {
+    //     method: "POST",
+    //     body: JSON.stringify({
+    //       user_id: 'david',
+    //       task_name: 'my first task',
+    //       task_description: "this is my first task",
+    //       task_location: "home",
+    //       task_color: "blue",
+    //       task_label: "work",
+    //       task_start_time: "12:30",
+    //       task_end_time: "1:30",
+    //       task_date: "Friday",
+    //       task_tags: "testing",
+    //       task_priority: "high"
+    //     }),
+    //     headers: {'Content-Type': 'application/json'}
+    //   });
 
     //   const tasks = await fetch("http://localhost:8000/get_tasks/" + 'david', {
     //     method: "GET",
@@ -73,6 +99,19 @@ export default app
       //   }),
       //   headers: {'Content-Type': 'application/json'}
       // });
+    //   const response3 = await fetch("http://localhost:8000/create_team_task", {
+    //     method: "POST",
+    //     body: JSON.stringify({
+    //       user_id: 'david',
+    //       task_name: 'my first team task',
+    //       task_description: "this is my first team task",
+    //       task_team: "team #1",
+    //       task_assignees: ["david roth", "john smith"],
+    //       task_priority: "high",
+    //       task_due_date: "6/5/2025"
+    //     }),
+    //     headers: {'Content-Type': 'application/json'}
+    //   });
 
     //   const teams = await fetch("http://localhost:8000/get_teams/" + 'david', {
     //     method: "GET",
