@@ -92,7 +92,7 @@
   <div class:shifted={sidebarOpen} class="main-content">
     <header class="header">
       <div class="logo" on:click={() => sidebarOpen = true}></div>
-      <p class="title-header">ToDo – Week 9</p>
+      <p class="title-header">ToDo</p>
     </header>
 
     <div class="search-bar"></div>
