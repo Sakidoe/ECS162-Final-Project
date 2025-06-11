@@ -107,6 +107,12 @@
 		return h + m / 60;
     }
 
+    function getWeekdayLabel(dateStr: string) {
+        const [month, day, year] = dateStr.split("/").map(Number);
+        const d = new Date(year, month - 1, day);
+        return `${weekdays[d.getDay()]} ${day}`;
+    }
+
     function getPositionedTasks(tasks: Record<string, Task>, weekDate: string): TaskWithMeta[] {
         const result: TaskWithMeta[] = [];
 
@@ -647,7 +653,7 @@
                             {#each weekDates as weekAndDate, index}
                                 {#each getPositionedTasks(tasks, weekAndDate) as task}
                                     <div
-                                        class="calendar-task"
+                                        class="calendar-task-week-page"
                                         style="
                                             grid-row-start: {task.start + 2};
                                             grid-row-end: {task.end + 2};
@@ -668,14 +674,42 @@
                         </div>
                         <!-- {/each} -->
                     {:else if calendar_view == 3}
-                        <div class="day-headings-only">
+                        <!-- <div class="day-headings-only">
                             <h3 class="day-box">
-                                <!-- {#each Object.entries(tasks) as [title, details]}
+                                {#each Object.entries(tasks) as [title, details]}
                                     {#if Number(details.task_date.split('/')[0]) == current_viewing_month + 1 && Number(details.task_date.split('/')[1]) == current_viewing_day && Number(details.task_date.split('/')[2]) == current_viewing_year}
                                         <p class="calendar-task-day-page" style="--background_color: {details.task_color}; --text_color: white" onclick={() => {openTaskTitle = title; show_tasks_modal = true;}}>{title}</p>
                                     {/if}
-                                {/each} -->
+                                {/each}
                             </h3>
+                        </div> -->
+                        <div class="day-calendar-grid">
+                            <!-- Weekday Heading -->
+                            <div class="day-header">{weekdays_spelled_out[weekday]} {current_viewing_day}</div>
+
+                            <!-- Time Labels -->
+                            {#each times as time, index}
+                                <div class="time-label" style="grid-row: {index + 2};">{time}</div>
+                            {/each}
+
+                            <!-- Tasks -->
+                            {#each getPositionedTasks(tasks, weekDates[weekday]) as task}
+                                <div
+                                class="calendar-task-day-page"
+                                style="
+                                    grid-row-start: {task.start + 2};
+                                    grid-row-end: {task.end + 2};
+                                    background-color: {task.details.task_color};
+                                    transform: translateX({(task.slot / task.totalSlots) * 100}%);
+                                    width: {100 / task.totalSlots}%;
+                                "
+                                onclick={() => {
+                                    openTaskTitle = task.title;
+                                    show_tasks_modal = true;
+                                }}>
+                                <p>{task.title}</p>
+                                </div>
+                            {/each}
                         </div>
                     {/if}
                 </div>
