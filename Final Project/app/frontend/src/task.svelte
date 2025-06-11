@@ -3,9 +3,12 @@
 
     const dispatch = createEventDispatcher(); // Create an event dispatcher
 
+<<<<<<< HEAD
     function closeForm() {
         dispatch("close");
     }
+=======
+>>>>>>> 07746b6347c129674c5474e10c9dedef21ec7192
     let showTaskBox = true; // Controls the visibility of the task box
 
     let checked = false;
@@ -261,7 +264,10 @@
                         console.log('Close button clicked');
                         resetTaskBox();
                         showTaskBox = false; // Hide the task box on close
+<<<<<<< HEAD
                         closeForm
+=======
+>>>>>>> 07746b6347c129674c5474e10c9dedef21ec7192
                     }}
                 >
                     X
@@ -395,7 +401,10 @@
                         console.log('Task submitted with tags:', selectedTags);
                         createTask();
                         showTaskBox = false; // Hide the task box after submission
+<<<<<<< HEAD
                         closeForm();
+=======
+>>>>>>> 07746b6347c129674c5474e10c9dedef21ec7192
                     }}
                     disabled={!taskName}
                 >
