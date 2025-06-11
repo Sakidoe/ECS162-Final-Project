@@ -340,7 +340,7 @@
 
     .task-container{
         width: 400px;
-        height: 300px;
+        height: 400px;
         color: black;
     }
 
@@ -397,7 +397,8 @@
     .clock-icon,
     .notes-icon,
     .location-icon,
-    .color-icon{
+    .color-icon,
+    .priority-icon{
         height: 25px;
         width: auto;
         padding-right: 5px;
@@ -405,7 +406,8 @@
     
     .notes-elements,
     .location-elements,
-    .task-color-elements{
+    .task-color-elements,
+    .priority-elements{
         display: flex;
         align-items: center;
     }
@@ -470,4 +472,25 @@
         font-size: 0.85rem;
         cursor: pointer;
         z-index: 2;
+    }
+    
+    .priority{
+        border: 1px solid #B1B1B1;
+        border-radius: 5px;
+        width: 250px;
+        font-size: 15px;
+        margin: 10px 0px 10px 30px;
+        height: 25px;
+    }
+
+    .submit-button,
+    .close-button{
+        margin: 5px;
+        align-items: end;
+        float: right;
+        /* margin-right: 30px; */
+    }
+
+    .submit-button{
+        margin-right: 35px;
     }

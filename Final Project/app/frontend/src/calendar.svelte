@@ -834,10 +834,16 @@
                         </span>
                         <!-- <h4>Task Color</h4> -->
         
-                        <h4>Task Priority</h4>
-                        <input bind:value={task_priority_text_input}/>
-                        <button onclick={() => add_task(task_title_text_input, task_description_text_input, task_location_text_input, task_color_text_input, task_label_text_input, task_start_time_text_input, task_end_time_text_input, add_task_date, task_tags_text_input, task_priority_text_input)}>Submit</button>
-                        <button onclick={() => {add_tasks_modal = false; add_task_date = null}}>Close</button>
+                        <!-- <h4>Task Priority</h4>-->
+
+                        <span class="priority-elements">
+                            <img src="priority.svg" alt="Priority Icon" class="priority-icon"/>
+                            <span>Priority</span>
+                            <input class = "priority" placeholder="Enter Priority" bind:value={task_priority_text_input}/>
+                        </span>
+                        
+                        <button class="submit-button" onclick={() => add_task(task_title_text_input, task_description_text_input, task_location_text_input, task_color_text_input, task_label_text_input, task_start_time_text_input, task_end_time_text_input, add_task_date, task_tags_text_input, task_priority_text_input)}>Submit</button>
+                        <button class="close-button" onclick={() => add_tasks_modal = false}>Close</button>
                         
                         <!-- <button onclick={() => dialog.close()}>Close</button> -->
                     </div>
