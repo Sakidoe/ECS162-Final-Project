@@ -1,5 +1,7 @@
 <script lang="ts">
   import Task from "./task.svelte";
+  import toggleOn from "./public/toggle_on.svg";
+  import toggleOff from "./public/toggle_off.svg";
 
   let sidebarOpen = false;
 
@@ -96,10 +98,20 @@
   $: completedGroup = tasks.filter(t => t.status === "completed");
 
   fetchTasks();
+  let colorblind = false;
+  function toggleColorblind() {
+    colorblind = !colorblind;
+    if (colorblind) {
+      document.documentElement.classList.add('colorblind');
+    } else {
+      document.documentElement.classList.remove('colorblind');
+    }
+  }
+
 </script>
 
 
-<main class="layout">
+<main class="layout" class:colorblind={colorblind}>
   <div class:sidebar-open={sidebarOpen} class="sidebar">
     <div class="close-btn" on:click={() => sidebarOpen = false}>X</div>
     <h2>NAME</h2>
@@ -110,6 +122,12 @@
       <div class="logout-icon"></div>
       <span>logout</span>
     </div>
+    <img
+      src={colorblind ? toggleOn : toggleOff}
+      alt="Toggle colorblind mode"
+      class="color-toggle"
+      on:click={toggleColorblind}
+    />
   </div>
 
   <div class:shifted={sidebarOpen} class="main-content">
@@ -188,13 +206,52 @@
 </main>
 
 <style>
+  :root {
+    /* Default color variables */
+    --background-color: #dbe1d7; /* muted green-gray */
+    --sidebar-color: #4a572a;
+    --nav-btn-color: #6f7d4c;
+    --logout-icon-color: #8a9a5b;
+    --header-color: #3d4c1c;
+    --task-card-color: #5b6d2f;
+    --tag-color: #8c9c61;
+    --in-progress-color: #88a595;
+    --completed-color: #99b6db;
+    --empty-task-in-progress: #84a89d;
+    --empty-task-completed: #9bbfe8;
+    --text-color: #f9f9f9;
+    --button-text-color: #5b6d2f;
+    --checkbox-border-color: white;
+    --checkbox-checked-color: white;
+    --checkbox-tick-color: #5b6d2f;
+  }
+
+  :root.colorblind {
+    --background-color: #C9C9C9; /* light gray */
+    --sidebar-color: #1B4F72; /* dark blue-gray */
+    --nav-btn-color: #C9C9C9; /* slightly lighter blue-gray */
+    --logout-icon-color: #7f8c8d; /* neutral gray */
+    --header-color: #2c3e50; /* dark blue-gray */
+    --task-card-color: #0072B2; 
+    --tag-color: #bdc3c7; 
+    --in-progress-color: #009E73;
+    --completed-color: #56B4E9; 
+    --empty-task-in-progress: #009E73; /* neutral gray */
+    --empty-task-completed: #56B4E9; /* light gray */
+    --text-color: #000000; /* black */
+    --button-text-color: #34495e; /* slightly lighter blue-gray */
+    --checkbox-border-color: #000000; /* black */
+    --checkbox-checked-color: #000000; /* black */
+    --checkbox-tick-color: #ffffff; /* white */
+  }
+
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
 
   html, body {
     margin: 0;
     padding: 0;
     border: none;
-    background-color: #dbe1d7;
+    background-color: var(--background-color);
     height: 100%;
     width: 100%;
     overflow-x: hidden;
@@ -216,19 +273,31 @@
     left: -320px;
     width: 320px;
     height: 100vh;
-    background-color: #4a572a;
+    background-color: var(--sidebar-color);
     padding: 1rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
     transition: left 0.3s ease;
     z-index: 10;
-    color: white;
+    color: var(--text-color);
   }
 
   .sidebar-open {
     left: 0;
   }
+
+  .color-toggle {
+    position: absolute;
+    bottom: 0;
+    right: 1rem;
+    width: 64px;
+    height: 64px;
+    cursor: pointer;
+  }
+  /* .colorblind {
+    /* override your colors via variables or selectors here */
+  /* } */
 
   .close-btn {
     align-self: flex-end;
@@ -238,14 +307,14 @@
   }
 
   .nav-btn {
-    background-color: #6f7d4c;
+    background-color: var(--nav-btn-color);
     border: none;
     padding: 0.75rem;
     border-radius: 6px;
     cursor: pointer;
     text-align: left;
     font-size: 1rem;
-    color: white;
+    color: var(--text-color);
   }
 
   .logout-container {
@@ -254,13 +323,13 @@
     align-items: center;
     gap: 0.5rem;
     cursor: pointer;
-    color: white;
+    color: var(--text-color);
   }
 
   .logout-icon {
     width: 24px;
     height: 24px;
-    background-color: #8a9a5b;
+    background-color: var(--logout-icon-color);
     border-radius: 4px;
   }
 
@@ -270,7 +339,7 @@
     flex: 1;
     transition: margin-left 0.3s ease;
     width: 100%;
-    background-color: #dbe1d7;
+    background-color: var(--background-color);
   }
 
   .main-content.shifted {
@@ -287,7 +356,7 @@
   .logo {
     width: 40px;
     height: 40px;
-    background-color: #3d4c1c;
+    background-color: var(--header-color);
     cursor: pointer;
   }
 
@@ -321,20 +390,20 @@
   }
 
   .column:nth-child(1) h2 {
-    background-color: #5b6d2f;
+    background-color: var(--task-card-color);
   }
 
   .column:nth-child(2) h2 {
-    background-color: #88a595;
+    background-color: var(--in-progress-color);
   }
 
   .column:nth-child(3) h2 {
-    background-color: #99b6db;
+    background-color: var(--completed-color);
   }
 
   .task-card {
     position: relative;
-    background-color: #5b6d2f;
+    background-color: var(--task-card-color);
     color: white;
     padding: 1rem;
     border-radius: 6px;
@@ -354,7 +423,7 @@
   }
 
   .tag {
-    background-color: #8c9c61;
+    background-color: var(--tag-color);
     display: inline-block;
     padding: 0.2rem 0.5rem;
     border-radius: 4px;
@@ -369,11 +438,11 @@
 
   /* Specific column background styles */
   .column:nth-child(2) .task-card.empty {
-    background-color: #84a89d; /* same as in-progress header */
+    background-color: var(--empty-task-in-progress); /* same as in-progress header */
   }
 
   .column:nth-child(3) .task-card.empty {
-    background-color: #9bbfe8; /* same as completed header */
+    background-color: var(--empty-task-completed); /* same as completed header */
   }
 
 
@@ -381,7 +450,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background-color: #5b6d2f;
+    background-color: var(--task-card-color);
     padding: 0.5rem;
     border-radius: 6px;
     color: white;
@@ -396,7 +465,7 @@
     font-size: 18px;
     font-weight: bold;
     cursor: pointer;
-    color: #5b6d2f;
+    color: var(--button-text-color);
   }
 
   .checkbox-wrapper {
@@ -453,14 +522,14 @@
   html, body {
   margin: 0;
   padding: 0;
-  background-color: #dbe1d7; /* muted green-gray */
+  background-color: var(--background-color); /* muted green-gray */
   height: 100%;
   width: 100%;
   overflow-x: hidden;
 }
 
 :global(body) {
-  background-color: #dbe1d7;
+  background-color: var(--background-color);
 }
 
 </style>
