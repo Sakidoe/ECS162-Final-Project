@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Task } from "./task.svelte";
+  import Task from "./task.svelte";
 
   let sidebarOpen = false;
 
@@ -9,7 +9,7 @@
   let newTaskTag = "";
   let newTaskPriority = "medium";
   let showCreateForm = false;
-  const userId = "david";
+  const userId = "jon";
 
   async function fetchTasks() {
     const res = await fetch(`http://localhost:8000/get_tasks/${userId}`, {
@@ -123,24 +123,21 @@
           </div>
         {/each}
 
-        <div class="task-card empty"></div>
+        <!-- <div class="task-card empty"></div> -->
         <div class="create-task">
-          {#if showCreateForm}
-            <input placeholder="Title" bind:value={newTaskTitle} />
-            <input placeholder="Tag" bind:value={newTaskTag} />
-            <select bind:value={newTaskPriority}>
-              <option value="high">high</option>
-              <option value="medium">medium</option>
-              <option value="low">low</option>
-            </select>
-            <!-- <button on:click={createTask}> -->
-            <button>
-              ✔</button>
-            <button on:click={() => showCreateForm = false}>✕</button>
-          {:else}
-            <button on:click={() => showCreateForm = true}>＋</button> create a new task
-          {/if}
+          <button on:click={() => { showCreateForm = true }}>+</button>
+          <p>Create a new task</p>
         </div>
+        
+        {#if showCreateForm}
+          <Task
+            on:close={() => showCreateForm = false}
+            on:taskCreated={() => {
+              showCreateForm = false; // Close the form
+              fetchTasks(); // Refresh the tasks
+            }}
+          />
+        {/if}
 
       </div>
 
