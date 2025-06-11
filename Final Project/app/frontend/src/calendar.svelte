@@ -697,7 +697,7 @@
                 </Tasks_Modal>
             {/key}
         {/if}
-        {#if add_tasks_modal && add_task_date}
+        {#if add_tasks_modal && add_task_date && !show_tasks_modal}
             {#key add_task_date}
                 <Add_Task_Modal bind:add_tasks_modal bind:add_task_date>
                     {#snippet header()}
