@@ -126,7 +126,7 @@
         {#each tasks as task, index}
           <div class="task-card">
             <div class="close">
-              <button 
+                <button 
                 on:click={() => { 
                   deleteTask(task.title).then(() => fetchTasks()); 
                 }} 
