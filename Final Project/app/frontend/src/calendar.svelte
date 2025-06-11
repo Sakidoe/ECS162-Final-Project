@@ -764,7 +764,7 @@
                         <h4>Task Priority</h4>
                         <input bind:value={details.task_priority}/>
                         <button onclick={() => add_task(task_title_text_input, task_description_text_input, task_location_text_input, task_color_text_input, task_label_text_input, task_start_time_text_input, task_end_time_text_input, task_date_text_input, task_tags_text_input, task_priority_text_input)}>Submit</button>
-                        <button onclick={() => add_tasks_modal = false}>Close</button>
+                        <button onclick={() => {show_tasks_modal = false; openTaskTitle = null; add_tasks_modal = false;}}>Close</button>
                         <!-- <button onclick={() => dialog.close()}>Close</button> -->
                     </div>
                 </Tasks_Modal>
@@ -818,7 +818,7 @@
                         <h4>Task Priority</h4>
                         <input bind:value={task_priority_text_input}/>
                         <button onclick={() => add_task(task_title_text_input, task_description_text_input, task_location_text_input, task_color_text_input, task_label_text_input, task_start_time_text_input, task_end_time_text_input, task_date_text_input, task_tags_text_input, task_priority_text_input)}>Submit</button>
-                        <button onclick={() => add_tasks_modal = false}>Close</button>
+                        <button onclick={() => {add_tasks_modal = false; add_task_date = null}}>Close</button>
                         <!-- <button onclick={() => dialog.close()}>Close</button> -->
                     </div>
                 </Add_Task_Modal>
