@@ -351,12 +351,13 @@
         width: 363px;
         font-size: 30px;
         font-weight: 100 !important;
-        margin: 10px 0;
+        margin: 0 0 10;
     }
 
-    .task-label{
+    .task-label,
+    .task-tag{
         display: flex;
-        margin: 10px 0;
+        margin: 15px 0 10px;
         font-weight: 100;
         padding: 10px;
         border-radius: 5px;
@@ -369,11 +370,17 @@
     .task-description{
         /* border: none;
         border-bottom: 1px solid black; */
-        border: 1px solid black;
+        border: 1px solid #B1B1B1;
         border-radius: 5px;
-        width: 363px;
-        font-size: 20px;
-        margin: 10px 0;
+        width: 250px;
+        font-size: 15px;
+        margin: 10px 0 10px 40px;
+        height: 25px;
+    }
+
+    .time-elements{
+        display: flex;
+        align-items: center;
     }
 
     .task-date,
@@ -384,4 +391,39 @@
         width: 80px;
         text-align: center;
         padding: 10px;
+        margin: 5px;
+    }
+
+    .clock-icon,
+    .notes-icon,
+    .location-icon,
+    .color-icon{
+        height: 25px;
+        width: auto;
+        padding-right: 5px;
+    }
+    
+    .notes-elements,
+    .location-elements,
+    .task-color-elements{
+        display: flex;
+        align-items: center;
+    }
+
+    .location-description{
+        border: 1px solid #B1B1B1;
+        border-radius: 5px;
+        width: 250px;
+        font-size: 15px;
+        margin: 10px 21px;
+        height: 25px;
+    }
+
+    .color-picker{
+        border: 1px solid #B1B1B1;
+        border-radius: 5px;
+        width: 250px;
+        font-size: 15px;
+        margin: 10px 11px;
+        height: 25px;
     }
