@@ -3,6 +3,9 @@
 
     const dispatch = createEventDispatcher(); // Create an event dispatcher
 
+    function closeForm() {
+        dispatch("close");
+    }
     let showTaskBox = true; // Controls the visibility of the task box
 
     let checked = false;
@@ -258,6 +261,7 @@
                         console.log('Close button clicked');
                         resetTaskBox();
                         showTaskBox = false; // Hide the task box on close
+                        closeForm
                     }}
                 >
                     X
@@ -391,6 +395,7 @@
                         console.log('Task submitted with tags:', selectedTags);
                         createTask();
                         showTaskBox = false; // Hide the task box after submission
+                        closeForm();
                     }}
                     disabled={!taskName}
                 >

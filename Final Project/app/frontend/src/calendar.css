@@ -1,14 +1,13 @@
     .calendar {
         display: grid;
         grid-template-columns: 25vw 75vw;
-        height: 100vh;
+        height: 100%;
     }
 
     .side-bar {
         grid-area: 1;
         display: grid;
         grid-template-rows: repeat(5, auto [row-start]);
-        /* background-color: rgba(104, 125, 49, .4); */
         background-color: #F4F4F4;
         border: 10px solid rgba(104, 125, 49, .4);
         border-radius: 25px;
@@ -40,32 +39,35 @@
         margin: 10px;
         background-color: white;
         max-height: 230px;
-        /* padding: 0 0px; */
     }
 
     .breakdown {
         grid-row: 4;
-        /* border: 2px solid black; */
         border: none;
         background-color: white;
         border-radius: 15px;
         margin: 10px;
     }
 
-    .time-breakdown-inside{
+    .breakdown-inside{
         padding: 0 15px;
     }  
 
     .notes {
         grid-row: 5;
-        /* border: 2px solid black;
-        border-bottom-left-radius: 15px;
-        border-bottom-right-radius: 15px;      */
         border: none;
         background-color: white;
         border-radius: 15px;
-        margin: 15px;
+        margin: 10px;
         padding: 0 15px ;
+    }
+
+    .note-button{
+        width: 275px;
+        border-radius: 5px;
+        height: 30px;
+        border: 1px solid rgba(104, 125, 49, 1);
+        background-color: rgba(104, 125, 49, .5);
     }
 
     .weekday-label {
@@ -116,7 +118,6 @@
         width: 10%;
         height: auto;
         border-radius: 50%;
-        /* padding: 10px 0 0 10px; */
     }
 
     .user-name {
@@ -145,6 +146,8 @@
         display: flex;
         flex-direction: column;
         gap: 10px;
+        flex: 1;
+        height: 85%;
     }
 
     .month-year{
@@ -219,19 +222,25 @@
     }
 
     .week-headings{
-        /* grid-column: var(--col_index);
-        grid-row: var(--row_index); */
         color: black;
         font-size: 20px;
         text-align: center;
         border-radius: 5px;
         margin: 10px;
         border: 1px solid rgba(104, 125, 49, .8);
+        background-color: var(--background_color);
+    }
+
+    .week-header{
+        font-weight: 100;
+        margin: 10px 0;
+        font-size: 17px;
+        background-color: white;
+        padding: 0;
+        /* background-color: var(--background_color); */
     }
 
     .calendar-cell.heading {
-        /* grid-column: var(--col_index);
-        grid-row: var(--row_index); */
         color: black;
         font-size: 20px;
         text-align: center;
@@ -239,6 +248,7 @@
         margin: 10px;
         border: 1px solid rgba(104, 125, 49, .8);
         font-weight: 100;
+        background-color: white;
     }
 
     .week-headings-only{
@@ -251,11 +261,12 @@
     }
 
     .calendar-dates{
-        aspect-ratio: 1/1;
+        height: 700px;
         display: grid;
         grid-template-columns: repeat(7, 1fr);
         grid-template-rows: repeat(5, 1fr);
         overflow: hidden;
+        max-height: 100%;
     }
 
     .weekdays{
@@ -263,7 +274,6 @@
         margin: 0;
         padding: 10px;
         border-radius: 15px;
-        /* border-right: 1px solid rgba(104, 125, 49, 1); */
         margin-left: 5%;
         margin: 10px;
         padding: 0;
@@ -324,7 +334,7 @@
     }
 
     .calendar-cell {
-        border: 1px solid #ddd;
+        border: 1px solid #dddddd;
         padding: 4px;
         box-sizing: border-box;
         font-weight: 100;
@@ -340,7 +350,15 @@
     .time-label {
         text-align: right;
         padding-right: 10px;
-        font-size: 0.9rem;
+        font-size: 14px;
+    }
+
+    .calendar-cell{
+        height: 50px;
+    }
+
+    .day-times:first-child{
+        margin-top: 50px;
     }
 
     .calendar-task-week-page {
@@ -383,13 +401,11 @@
     }
 
     .task-description{
-        /* border: none;
-        border-bottom: 1px solid black; */
         border: 1px solid #B1B1B1;
         border-radius: 5px;
         width: 250px;
         font-size: 15px;
-        margin: 10px 0 10px 40px;
+        margin: 10px 0px 10px 55px;
         height: 25px;
     }
 
@@ -422,7 +438,8 @@
     .notes-elements,
     .location-elements,
     .task-color-elements,
-    .priority-elements{
+    .priority-elements,
+    .priority-container{
         display: flex;
         align-items: center;
     }
@@ -432,7 +449,7 @@
         border-radius: 5px;
         width: 250px;
         font-size: 15px;
-        margin: 10px 21px;
+        margin: 10px 0px 10px 35px;
         height: 25px;
     }
 
@@ -441,14 +458,14 @@
         border-radius: 5px;
         width: 250px;
         font-size: 15px;
-        margin: 10px 11px;
+        margin: 10px 0px 10px 25px;
         height: 25px;
     }
 
     .day-calendar-grid {
         display: grid;
-        grid-template-columns: 100px 1fr; /* time column, task column */
-        grid-template-rows: 40px repeat(48, 1fr); /* header + 30-min rows */
+        grid-template-columns: 100px 1fr;
+        grid-template-rows: 40px repeat(48, 1fr);
         width: 100%;
         height: 100vh;
         border: 1px solid #ddd;
@@ -456,25 +473,30 @@
     }
 
     .day-header {
-        grid-column: 1 / span 2;
+        display: flex;
+        grid-column: 1;
         grid-row: 1;
         text-align: center;
-        font-weight: bold;
-        font-size: 1.2rem;
-        background: #f0f0f0;
-        line-height: 40px;
-        border-bottom: 1px solid #ccc;
+        padding: 20px;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+        border: 1px solid rgba(104, 125, 49, 1);
+        border-radius: 5px;
+        font-size: 17px;
+        width: 80px;
+        margin-left: 100px;
     }
 
     .time-label {
         grid-column: 1;
         text-align: right;
         padding-right: 6px;
-        font-size: 0.85rem;
+        font-size: 14px;
         line-height: 1;
         display: flex;
         align-items: center;
-        border-top: 1px solid #eee;
+        border-top: 1px solid #eeeeee;
     }
 
     .calendar-task-day-page {
@@ -484,9 +506,7 @@
         box-sizing: border-box;
         border-radius: 4px;
         color: white;
-        font-size: 0.85rem;
-        cursor: pointer;
-        z-index: 2;
+        font-size: 14px;
     }
     
     .priority{
@@ -499,13 +519,88 @@
     }
 
     .submit-button,
-    .close-button{
+    .close-button,
+    .delete-button{
         margin: 5px;
         align-items: end;
         float: right;
-        /* margin-right: 30px; */
     }
 
     .submit-button{
-        margin-right: 35px;
+        margin-right: 20px;
+        margin-top: 10px;
+        /* margin: 10px; */
+        padding: 5px;
+        width: 100px;
+        border-radius: 5px;
+        border: 1px solid rgba(104, 125, 49, 1);
+        background-color: rgba(104, 125, 49, .5);
+    }
+
+    .delete-button{
+        /* margin-right: 30px; */
+        margin-top: 10px;
+        /* margin: 10px; */
+        padding: 5px;
+        width: 100px;
+        border-radius: 5px;
+        border: 1px solid rgba(104, 125, 49, 1);
+        background-color: rgba(104, 125, 49, .5);
+    }
+
+    .week-add-task-box {
+        grid-row-start: 1;
+        grid-row-end: 48;
+        grid-column: var(--col);
+    }
+
+    .note-title,
+    .note-contents{
+        width: 470px;
+        height: 30px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        border: 1px solid rgba(104, 125, 49, 1);
+        
+    }
+
+    .note-submit-btn{
+        padding: 5px;
+        width: 100px;
+        border-radius: 5px;
+        border: 1px solid rgba(104, 125, 49, 1);
+        margin: 10px;
+        background-color: rgba(104, 125, 49, .5);
+    }
+
+    .close-button{
+        margin: 10px;
+        padding: 5px;
+        width: 100px;
+        border-radius: 5px;
+        border: 1px solid rgba(104, 125, 49, 1);
+        background-color: rgba(104, 125, 49, .5);
+    }
+
+    .resolve-note-btn{
+        border-radius: 5px;
+        border: 1px solid rgba(104, 125, 49, 1);
+        margin: 5px 0 15px 210px;
+    }
+
+    .resolve-div{
+        border-bottom: 1px solid rgba(104, 125, 49, 1);
+    }
+
+    .priority-name{
+        font-weight: 100;
+    }
+
+    .prioirty-input{
+        border: 1px solid #B1B1B1;
+        border-radius: 5px;
+        width: 250px;
+        font-size: 15px;
+        margin: 10px 11px;
+        height: 25px;
     }
