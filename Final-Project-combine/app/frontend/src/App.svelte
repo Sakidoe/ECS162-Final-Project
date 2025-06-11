@@ -154,13 +154,16 @@
     </section>
   </div>
 </main>
-
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
 
   * {
     font-family: 'Playfair Display', serif;
     box-sizing: border-box;
+  }
+
+  body {
+    background-color: #dbe1d7; /* light sage gray */
   }
 
   .layout {
@@ -173,13 +176,14 @@
     left: -320px;
     width: 320px;
     height: 100vh;
-    background-color: #ddd;
+    background-color: #4a572a; /* olive green */
     padding: 1rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
     transition: left 0.3s ease;
     z-index: 10;
+    color: white;
   }
 
   .sidebar-open {
@@ -190,16 +194,18 @@
     align-self: flex-end;
     cursor: pointer;
     font-size: 1.2rem;
+    color: white;
   }
 
   .nav-btn {
-    background-color: #bbb;
+    background-color: #6f7d4c; /* muted olive */
     border: none;
     padding: 0.75rem;
     border-radius: 6px;
     cursor: pointer;
     text-align: left;
     font-size: 1rem;
+    color: white;
   }
 
   .logout-container {
@@ -208,12 +214,13 @@
     align-items: center;
     gap: 0.5rem;
     cursor: pointer;
+    color: white;
   }
 
   .logout-icon {
     width: 24px;
     height: 24px;
-    background-color: #aaa;
+    background-color: #8a9a5b;
     border-radius: 4px;
   }
 
@@ -223,6 +230,7 @@
     flex: 1;
     transition: margin-left 0.3s ease;
     width: 100%;
+    background-color: #dbe1d7;
   }
 
   .main-content.shifted {
@@ -239,17 +247,21 @@
   .logo {
     width: 40px;
     height: 40px;
-    background-color: #ccc;
+    background-color: #3d4c1c;
     cursor: pointer;
   }
 
   .title-header {
     font-size: 30px;
+    background-color: white;
+    padding: 0.5rem 2rem;
+    border: 1px solid #556b2f;
+    border-radius: 5px;
   }
 
   .search-bar {
     height: 40px;
-    background-color: #ddd;
+    background-color: #e2e8d5;
     border-radius: 6px;
     margin-bottom: 1rem;
   }
@@ -268,13 +280,23 @@
 
   .column h2 {
     text-align: center;
-    background-color: #ddd;
+    background-color: #5b6d2f;
+    color: white;
     padding: 0.5rem;
     border-radius: 6px;
   }
 
+  .column:nth-child(2) h2 {
+    background-color: #88a595;
+  }
+
+  .column:nth-child(3) h2 {
+    background-color: #99b6db;
+  }
+
   .task-card {
-    background-color: #eee;
+    background-color: #5b6d2f; /* dark olive */
+    color: white;
     padding: 1rem;
     border-radius: 6px;
     display: flex;
@@ -293,28 +315,30 @@
   }
 
   .tag {
-    background-color: #ccc;
+    background-color: #8c9c61;
     display: inline-block;
     padding: 0.2rem 0.5rem;
     border-radius: 4px;
+    color: white;
   }
 
   .task-card.empty {
     height: 100px;
-    background-color: #ddd;
+    background-color: #aab78a;
   }
 
   .create-task {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background-color: #ddd;
+    background-color: #5b6d2f;
     padding: 0.5rem;
     border-radius: 6px;
+    color: white;
   }
 
   .create-task button {
-    background-color: #bbb;
+    background-color: white;
     border: none;
     width: 24px;
     height: 24px;
@@ -322,39 +346,58 @@
     font-size: 18px;
     font-weight: bold;
     cursor: pointer;
+    color: #5b6d2f;
   }
+
   .checkbox-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-}
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
 
-.styled-checkbox {
-  appearance: none;
-  width: 1.2rem;
-  height: 1.2rem;
-  border: 2px solid #888;
-  border-radius: 0.25rem;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  position: relative;
-}
+  .styled-checkbox {
+    appearance: none;
+    width: 1.2rem;
+    height: 1.2rem;
+    border: 2px solid white;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    background-color: transparent;
+  }
 
-.styled-checkbox:checked {
-  background-color: #4CAF50;
-  border-color: #4CAF50;
-}
+  .styled-checkbox:checked {
+    background-color: #ffffff;
+    border-color: #ffffff;
+  }
 
-.styled-checkbox:checked::after {
-  content: '';
-  position: absolute;
-  left: 0.35rem;
-  top: 0.05rem;
-  width: 0.25rem;
-  height: 0.6rem;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-}
+  .styled-checkbox:checked::after {
+    content: '';
+    position: absolute;
+    left: 0.35rem;
+    top: 0.05rem;
+    width: 0.25rem;
+    height: 0.6rem;
+    border: solid #5b6d2f;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background-color: #dbe1d7 !important;
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  main.layout {
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
 </style>

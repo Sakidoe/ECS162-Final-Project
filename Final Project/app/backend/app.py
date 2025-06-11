@@ -54,9 +54,9 @@ google = oauth.register(
 )
 
 # Mongo connection
-mongo_uri = os.getenv("MONGO_URI")
+mongo_uri = os.getenv("MONGO_URI", "mongodb://host.docker.internal:27017/mydatabase")
 mongo = MongoClient(mongo_uri)
-db = mongo.get_database()
+db = mongo["mydatabase"]
 
 @app.route('/')
 @app.route('/<path:path>')
