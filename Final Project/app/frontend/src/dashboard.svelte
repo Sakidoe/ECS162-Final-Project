@@ -182,7 +182,7 @@
         </div>
         
         {#if showCreateForm}
-          <Task
+          <Task userID={userId}
             on:close={() => showCreateForm = false}
             on:taskCreated={() => {
               showCreateForm = false; // Close the form

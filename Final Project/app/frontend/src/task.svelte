@@ -24,7 +24,8 @@
         { name: 'high', checked: false }
     ];
 
-    let userID = "jon";
+    // let userID = "jon";
+    export let userID;
     let selectedTags = [];
     let taskName = "";
     let taskDescription = "";
