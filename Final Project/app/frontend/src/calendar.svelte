@@ -545,13 +545,13 @@
                                         grid-row: 1;
                                         grid-column: {index + 2};
                                     ">
-                                    <h3>{weekAndDate.split('/')[1]} {weekdays_spelled_out[index]}</h3>
+                                    <h3 class="week-header">{weekAndDate.split('/')[1]} {weekdays_spelled_out[index]}</h3>
                                 </div>
                             {/each}
 
                             <!-- Time Labels (1st column) -->
                             {#each times as time, index}
-                                <div class="calendar-cell time-label"
+                                <div class="calendar-cell time-label day-times"
                                     style="
                                         grid-row: {index + 2};
                                         grid-column: 1;
@@ -599,14 +599,12 @@
                         </div> -->
                         <div class="day-calendar-grid" onclick={() => {add_task_date = String(month + 1) + '/' + current_viewing_day + '/' + String(year); add_tasks_modal = true}}>
                             <!-- Weekday Heading -->
-                            <div class="day-header">{weekdays_spelled_out[weekday]} {current_viewing_day}</div>
+                            <div class="day-header">{current_viewing_day} {weekdays_spelled_out[weekday]}</div>
 
-                            <!-- Time Labels -->
                             {#each times as time, index}
-                                <div class="time-label" style="grid-row: {index + 2};">{time}</div>
+                                <div class="calendar-cell time-label day-times" style="grid-row: {index + 2};">{time}</div>
                             {/each}
 
-                            <!-- Tasks -->
                             {#each getPositionedTasks(tasks, weekDates[weekday]) as task}
                                 <div
                                 class="calendar-task-day-page"
