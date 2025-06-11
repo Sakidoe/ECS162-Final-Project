@@ -244,5 +244,14 @@ def delete_task():
     db.notes.update_one({"ID": user_id}, {"$unset": {f"tasks.{task_title}": 1}})
     return jsonify({"success": "task deleted successfully"})
 
+@app.route("/delete_team_task", methods=["POST"])
+def delete_team_task():
+    request_dictionary = request.get_json()
+    team = request_dictionary['team']
+    task_name = request_dictionary['task_name']
+    user_id = request_dictionary['user_id']
+    db.notes.update_one({"ID": user_id}, {"$unset": {f"teams.{team}.{task_name}": 1}})
+    return jsonify({"success": "team task deleted successfully"})
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8000)
