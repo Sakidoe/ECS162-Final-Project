@@ -208,7 +208,7 @@
 <style>
   :root {
     /* Default color variables */
-    --background-color: #dbe1d7; /* muted green-gray */
+    --background-color: #dbe1d7; 
     --sidebar-color: #4a572a;
     --nav-btn-color: #6f7d4c;
     --logout-icon-color: #8a9a5b;
@@ -227,22 +227,22 @@
   }
 
   :root.colorblind {
-    --background-color: #C9C9C9; /* light gray */
-    --sidebar-color: #1B4F72; /* dark blue-gray */
-    --nav-btn-color: #C9C9C9; /* slightly lighter blue-gray */
-    --logout-icon-color: #7f8c8d; /* neutral gray */
-    --header-color: #2c3e50; /* dark blue-gray */
+    --background-color: #C9C9C9; 
+    --sidebar-color: #1B4F72; 
+    --nav-btn-color: #C9C9C9; 
+    --logout-icon-color: #7f8c8d; 
+    --header-color: #2c3e50;
     --task-card-color: #0072B2; 
     --tag-color: #bdc3c7; 
     --in-progress-color: #009E73;
     --completed-color: #56B4E9; 
-    --empty-task-in-progress: #009E73; /* neutral gray */
-    --empty-task-completed: #56B4E9; /* light gray */
-    --text-color: #000000; /* black */
-    --button-text-color: #34495e; /* slightly lighter blue-gray */
-    --checkbox-border-color: #000000; /* black */
-    --checkbox-checked-color: #000000; /* black */
-    --checkbox-tick-color: #ffffff; /* white */
+    --empty-task-in-progress: #009E73; 
+    --empty-task-completed: #56B4E9; 
+    --text-color: #000000; 
+    --button-text-color: #34495e;
+    --checkbox-border-color: #000000; 
+    --checkbox-checked-color: #000000; 
+    --checkbox-tick-color: #ffffff; 
   }
 
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
