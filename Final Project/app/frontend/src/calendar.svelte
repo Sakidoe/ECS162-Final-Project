@@ -107,12 +107,6 @@
 		return h + m / 60;
     }
 
-    function getWeekdayLabel(dateStr: string) {
-        const [month, day, year] = dateStr.split("/").map(Number);
-        const d = new Date(year, month - 1, day);
-        return `${weekdays[d.getDay()]} ${day}`;
-    }
-
     function getPositionedTasks(tasks: Record<string, Task>, weekDate: string): TaskWithMeta[] {
         const result: TaskWithMeta[] = [];
 
@@ -195,6 +189,24 @@
         notes = {...notes};
     }
 
+    function delete_task(task_title: string | null) {
+        if (task_title != null) {
+            fetch("http://localhost:8000/delete_task", {
+                method: "POST",
+                body: JSON.stringify({
+                    user_id: user,
+                    task_title: task_title
+                }),
+                headers: {'Content-Type': 'application/json'}
+            });
+            delete tasks[task_title];
+            tasks = {...tasks};
+            show_tasks_modal = false; 
+            openTaskTitle = null;
+            add_tasks_modal = false;
+        }
+    }
+
     function add_note(note_title: string, note_description: string) {
         fetch("http://localhost:8000/create_note", {
             method: "POST",
@@ -213,12 +225,28 @@
         note_title_text_input = '';
     }
 
-    function add_task(task_title: string, task_description: string, task_location: string, task_color: string, task_label: string, task_start_time: string, task_end_time: string, task_date: string, task_tags: string, task_priority: string) {
-        fetch("http://localhost:8000/create_task", {
-            method: "POST",
-            body: JSON.stringify({
-                user_id: user,
-                task_name: task_title,
+    function add_task(task_title: string | null, task_description: string, task_location: string, task_color: string, task_label: string, task_start_time: string, task_end_time: string, task_date: string | null, task_tags: string[], task_priority: string) {
+        if (task_title != null && task_date != null) {
+            fetch("http://localhost:8000/create_task", {
+                method: "POST",
+                body: JSON.stringify({
+                    user_id: user,
+                    task_name: task_title,
+                    task_description: task_description,
+                    task_location: task_location,
+                    task_color: task_color,
+                    task_label: task_label,
+                    task_start_time: task_start_time,
+                    task_end_time: task_end_time,
+                    task_date: task_date,
+                    task_tags: task_tags,
+                    task_priority: task_priority
+                }),
+                headers: {'Content-Type': 'application/json'}
+            });
+            let task_tags_array = [];
+            task_tags_array.push(task_tags);
+            tasks[task_title] = {
                 task_description: task_description,
                 task_location: task_location,
                 task_color: task_color,
@@ -226,43 +254,34 @@
                 task_start_time: task_start_time,
                 task_end_time: task_end_time,
                 task_date: task_date,
-                task_tags: [task_tags],
+                task_tags: task_tags_array,
                 task_priority: task_priority
-            }),
-            headers: {'Content-Type': 'application/json'}
-        });
-        let task_tags_array = [];
-        task_tags_array.push(task_tags);
-        tasks[task_title] = {
-            task_description: task_description,
-            task_location: task_location,
-            task_color: task_color,
-            task_label: task_label,
-            task_start_time: task_start_time,
-            task_end_time: task_end_time,
-            task_date: task_date,
-            task_tags: task_tags_array,
-            task_priority: task_priority
-        }
-        tasks = {...tasks};
-        for (let i = 0; i < task_tags_array.length; i++) {
-            if (task_tags_array[i] in all_task_tags) {
-                all_task_tags[task_tags_array[i]] += 1;
-            } else {
-                all_task_tags[task_tags_array[i]] = 1;
             }
+            tasks = {...tasks};
+            for (let i = 0; i < task_tags_array.length; i++) {
+                if (task_tags_array[i] in all_task_tags) {
+                    all_task_tags[task_tags_array[i]] += 1;
+                } else {
+                    all_task_tags[task_tags_array[i]] = 1;
+                }
+            }
+            all_task_tags = {... all_task_tags}
+            task_title_text_input  = '';
+            task_description_text_input = '';
+            task_location_text_input = '';
+            task_color_text_input = '';
+            task_label_text_input = '';
+            task_start_time_text_input = '';
+            task_end_time_text_input = '';
+            task_date_text_input = '';
+            task_tags_text_input = '';
+            task_priority_text_input = '';
+            show_tasks_modal = false; 
+            openTaskTitle = null;
+            add_tasks_modal = false;
+            add_tasks_modal = false;
+            add_task_date = null;
         }
-        all_task_tags = {... all_task_tags}
-        task_title_text_input  = '';
-        task_description_text_input = '';
-        task_location_text_input = '';
-        task_color_text_input = '';
-        task_label_text_input = '';
-        task_start_time_text_input = '';
-        task_end_time_text_input = '';
-        task_date_text_input = '';
-        task_tags_text_input = '';
-        task_priority_text_input = '';
     }
 
     let note_title_text_input = $state('');
@@ -277,7 +296,7 @@
     let task_end_time_text_input = $state('');
     let task_date_text_input = $state('');
     let task_priority_text_input = $state('');
-    let task_tags_text_input = $state('');
+    let task_tags_text_input = $state(['']);
     let multiple_tasks = 0;
 
 
@@ -763,9 +782,9 @@
         
                         <h4>Task Priority</h4>
                         <input bind:value={details.task_priority}/>
-                        <button onclick={() => add_task(task_title_text_input, task_description_text_input, task_location_text_input, task_color_text_input, task_label_text_input, task_start_time_text_input, task_end_time_text_input, task_date_text_input, task_tags_text_input, task_priority_text_input)}>Submit</button>
+                        <button onclick={() => add_task(openTaskTitle, details.task_description, details.task_location, details.task_color, details.task_label, details.task_start_time, details.task_end_time, details.task_date, details.task_tags, details.task_priority)}>Submit</button>
                         <button onclick={() => {show_tasks_modal = false; openTaskTitle = null; add_tasks_modal = false;}}>Close</button>
-                        <!-- <button onclick={() => dialog.close()}>Close</button> -->
+                        <button onclick={() => delete_task(openTaskTitle)}>Delete</button>
                     </div>
                 </Tasks_Modal>
             {/key}
@@ -787,7 +806,7 @@
 
                             <span class="time-elements">
                             <img src="/clock.svg" alt="Clock Icon" class="clock-icon"/>
-                            <input class="task-date" placeholder="Date" bind:value={task_date_text_input}/>
+                            <input class="task-date" placeholder="Date" bind:value={add_task_date}/>
                             <span>:</span>
                             <input class="start-time" placeholder="Start Time" bind:value={task_start_time_text_input}/>
                             <span>-</span>
@@ -817,8 +836,9 @@
         
                         <h4>Task Priority</h4>
                         <input bind:value={task_priority_text_input}/>
-                        <button onclick={() => add_task(task_title_text_input, task_description_text_input, task_location_text_input, task_color_text_input, task_label_text_input, task_start_time_text_input, task_end_time_text_input, task_date_text_input, task_tags_text_input, task_priority_text_input)}>Submit</button>
+                        <button onclick={() => add_task(task_title_text_input, task_description_text_input, task_location_text_input, task_color_text_input, task_label_text_input, task_start_time_text_input, task_end_time_text_input, add_task_date, task_tags_text_input, task_priority_text_input)}>Submit</button>
                         <button onclick={() => {add_tasks_modal = false; add_task_date = null}}>Close</button>
+                        
                         <!-- <button onclick={() => dialog.close()}>Close</button> -->
                     </div>
                 </Add_Task_Modal>
