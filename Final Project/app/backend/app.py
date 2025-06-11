@@ -54,14 +54,9 @@ google = oauth.register(
 )
 
 # Mongo connection
-mongo_uri = os.getenv("MONGO_URI", "mongodb://host.docker.internal:27017/mydatabase")
-
-
-# Create MongoDB client
+mongo_uri = os.getenv("MONGO_URI")
 mongo = MongoClient(mongo_uri)
-
-# Get the specific database explicitly
-db = mongo["mydatabase"]
+db = mongo.get_database()
 
 @app.route('/')
 @app.route('/<path:path>')
@@ -232,6 +227,31 @@ def create_team_task():
     else:
         db.notes.update_one({"ID": user_id}, {"$set": {f"teams.{task_team}": {task_name: {"task_description": task_description, "task_assignees": task_assignees, "task_priority": task_priority, "task_due_date": task_due_date}}}})
     return jsonify({"success": "team task created successfully"})
+
+@app.route("/delete_note", methods=["POST"])
+def delete_note():
+    request_dictionary = request.get_json()
+    note_title = request_dictionary['note_title']
+    user_id = request_dictionary['user_id']
+    db.notes.update_one({"ID": user_id}, {"$unset": {f"notes.{note_title}": 1}})
+    return jsonify({"success": "note deleted successfully"})
+
+@app.route("/delete_task", methods=["POST"])
+def delete_task():
+    request_dictionary = request.get_json()
+    task_title = request_dictionary['task_title']
+    user_id = request_dictionary['user_id']
+    db.notes.update_one({"ID": user_id}, {"$unset": {f"tasks.{task_title}": 1}})
+    return jsonify({"success": "task deleted successfully"})
+
+@app.route("/delete_team_task", methods=["POST"])
+def delete_team_task():
+    request_dictionary = request.get_json()
+    team = request_dictionary['team']
+    task_name = request_dictionary['task_name']
+    user_id = request_dictionary['user_id']
+    db.notes.update_one({"ID": user_id}, {"$unset": {f"teams.{team}.{task_name}": 1}})
+    return jsonify({"success": "team task deleted successfully"})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8000)

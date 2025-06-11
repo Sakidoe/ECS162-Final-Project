@@ -28,6 +28,29 @@
     }
   }
 
+  async function deleteTask(title) {
+    try {
+      const res = await fetch('http://localhost:8000/delete_task', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id:    userId,
+          task_title: title
+        })
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const data = await res.json();
+      if (data.success) {
+        // Remove it locally
+        tasks = tasks.filter(t => t.task_name !== title);
+      } else {
+        console.warn('Unexpected delete response:', data);
+      }
+    } catch (err) {
+      console.error('Failed to delete task:', err);
+    }
+  }
   // async function createTask() {
   //   if (!newTaskTitle || !newTaskTag) return alert("Fill out all fields.");
   //   await fetch("http://localhost:8000/create_task", {
@@ -102,6 +125,16 @@
         <h2>task</h2>
         {#each tasks as task, index}
           <div class="task-card">
+            <div class="close">
+              <button 
+                on:click={() => { 
+                  deleteTask(task.title).then(() => fetchTasks()); 
+                }} 
+                class="closeTask"
+              >
+                X
+              </button>
+            </div>
             <div class="task-header">
               <span>{task.title}</span>
               <span class="task-date">{task.date}</span>
@@ -275,6 +308,7 @@
   }
 
   .task-card {
+    position: relative; /* Make the task card a positioned container */
     background-color: #eee;
     padding: 1rem;
     border-radius: 6px;
@@ -358,4 +392,21 @@
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
+
+.close {
+  position: absolute; 
+  top: 0.5rem; 
+  right: 0.5rem; 
+  cursor: pointer;
+}
+
+.closeTask {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #888;
+  cursor: pointer;
+}
+
 </style>
