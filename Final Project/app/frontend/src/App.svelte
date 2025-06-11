@@ -9,7 +9,7 @@
   let newTaskTag = "";
   let newTaskPriority = "medium";
   let showCreateForm = false;
-  const userId = "jon";
+  const userId = "jon"; //hardcoded
 
   async function fetchTasks() {
     const res = await fetch(`http://localhost:8000/get_tasks/${userId}`, {

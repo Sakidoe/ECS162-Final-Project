@@ -1,8 +1,4 @@
 <script>
-    import { createEventDispatcher } from "svelte";
-
-    const dispatch = createEventDispatcher(); // Create an event dispatcher
-
     let showTaskBox = true; // Controls the visibility of the task box
 
     let checked = false;
@@ -37,18 +33,18 @@
 
     async function createTask() {
         selectedTags = allTags
-            .filter((t) => t.checked)
-            .map((t) => t.name);
+        .filter((t) => t.checked)
+        .map((t) => t.name);
 
         const payload = {
-            user_id: userID,
+            user_id: userID, 
             task_name: taskName,
             task_description: taskDescription,
-            task_tags: selectedTags,
-            task_priority: selectedPriority,
-            task_date: taskDate,
+            task_tags: selectedTags, // send an array of strings
+            task_priority: selectedPriority, // single string
+            task_date: taskDate, // "2025-06-15"
             task_start_time: taskStartTime,
-            task_end_time: taskEndTime,
+            task_end_time: taskEndTime,     
             task_location: taskLocation,
             task_color: taskColor,
             task_label: taskLabel
@@ -67,9 +63,6 @@
                 feedback = "Task created successfully";
                 resetTaskBox();
                 showTaskBox = false; // Hide the task box after submission
-
-                // Emit the custom event to notify the parent
-                dispatch("taskCreated");
             } else {
                 feedback = "Unexpected response: " + JSON.stringify(data);
             }
