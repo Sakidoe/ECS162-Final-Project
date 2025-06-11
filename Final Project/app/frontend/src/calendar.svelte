@@ -718,16 +718,55 @@
         {#if show_tasks_modal && openTaskTitle}
             {#key openTaskTitle}    
                 <Tasks_Modal bind:show_tasks_modal bind:openTaskTitle bind:add_tasks_modal>
-                        {#snippet header()}
-                            <h2>{openTaskTitle}</h2>
-                        {/snippet}
-                        {@const details = tasks[openTaskTitle]}
-                        <p>Label: {details.task_label}</p>
-                        <p>Priority: {details.task_priority}</p>
-                        <p>{details.task_date}: {details.task_start_time}-{details.task_end_time}</p>
-                        <p>Notes: {details.task_description}</p>
-                        <p>Location: {details.task_location}</p>
-                        <p>Tags: {details.task_tags}</p>
+                    {#snippet header()}
+                    <!-- <h2>Add a Task</h2> -->
+                    {/snippet}
+                    {@const details = tasks[openTaskTitle]}
+                    <div class="task-container">
+                        <!-- <h4>Task Title</h4> -->
+                        <input class="task-title" placeholder="Task Title" bind:value={openTaskTitle}/>
+                        <!-- <h4>Task Label</h4> -->
+                        <input class="task-label" placeholder="Add Label" bind:value={details.task_label}/>
+                        <!-- <h4>Task Date</h4> -->
+
+                        <input class="task-tag" placeholder="Add Tag" bind:value={details.task_tags}/>
+
+                            <span class="time-elements">
+                            <img src="/clock.svg" alt="Clock Icon" class="clock-icon"/>
+                            <input class="task-date" placeholder="Date" bind:value={details.task_date}/>
+                            <span>:</span>
+                            <input class="start-time" placeholder="Start Time" bind:value={details.task_start_time}/>
+                            <span>-</span>
+                            <input class="end-time" placeholder="End Time" bind:value={details.task_end_time}/>  
+                            </span>
+                
+                        <!-- <h4>Task Description</h4> -->
+                            <span class="notes-elements">
+                            <img src="/notes.svg" alt="Notes Icon" class="notes-icon"/>
+                            <span>Notes</span>
+                            <input class="task-description" placeholder="Add Description" bind:value={details.task_description}/>
+                            </span>
+                        
+                        <!-- <h4>Task Location</h4> -->
+                        <span class="location-elements">
+                            <img src="/location.svg" alt="Location Icon" class="location-icon"/>
+                            <span>Location</span>
+                            <input class="location-description" placeholder="Add Location" bind:value={details.task_location}/>
+                        </span>
+
+                        <span class="task-color-elements">
+                            <img src="/color_picker.svg" alt="Color Icon" class="color-icon"/>
+                            <span>Add Color</span>
+                            <input class="color-picker" placeholder="Enter Color" bind:value={details.task_color}/>
+                        </span>
+                        <!-- <h4>Task Color</h4> -->
+        
+                        <h4>Task Priority</h4>
+                        <input bind:value={details.task_priority}/>
+                        <button onclick={() => add_task(task_title_text_input, task_description_text_input, task_location_text_input, task_color_text_input, task_label_text_input, task_start_time_text_input, task_end_time_text_input, task_date_text_input, task_tags_text_input, task_priority_text_input)}>Submit</button>
+                        <button onclick={() => add_tasks_modal = false}>Close</button>
+                        <!-- <button onclick={() => dialog.close()}>Close</button> -->
+                    </div>
                 </Tasks_Modal>
             {/key}
         {/if}

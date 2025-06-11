@@ -21,7 +21,7 @@
 		{@render children?.()}
 		<!-- <hr /> -->
 		<!-- svelte-ignore a11y_autofocus -->
-		<button autofocus onclick={() => dialog.close()}>Close</button>
+		<!-- <button autofocus onclick={() => dialog.close()}>Close</button> -->
 	</div>
 </dialog>
 
